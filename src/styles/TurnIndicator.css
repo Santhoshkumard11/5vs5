@@ -1,0 +1,43 @@
+.turn-indicator {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.turn-indicator.player {
+    border-left: 5px solid #2ecc71;
+}
+
+.turn-indicator.cpu {
+    border-left: 5px solid #e74c3c;
+}
+
+.turn-content h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.5em;
+}
+
+.selected-info {
+    color: #3498db;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.turn-instructions {
+    font-size: 0.9em;
+    color: #7f8c8d;
+    margin-top: 5px;
+}
+
+.turn-indicator.player .turn-content h2 {
+    color: #27ae60;
+}
+
+.turn-indicator.cpu .turn-content h2 {
+    color: #c0392b;
+}

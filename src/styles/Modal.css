@@ -1,0 +1,52 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+}
+
+.option-button {
+    margin: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.option-button:hover {
+    background: #2980b9;
+}
+
+.restart-button {
+    margin-top: 20px;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    background: #2ecc71;
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.restart-button:hover {
+    background: #27ae60;
+}

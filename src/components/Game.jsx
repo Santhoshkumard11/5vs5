@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Import for navigation
+import { Button, Modal, Box, Typography } from "@mui/material"; // MUI imports
 import TeamDisplay from "./TeamDisplay";
 import TurnIndicator from "./TurnIndicator";
 import AirdropModal from "./AirdropModal";
@@ -8,17 +10,20 @@ import {
   isValidAction,
   checkGameOver,
   getAIMove,
+  getWinningPlayer,
 } from "../utils/gameLogic";
 import { calculateDamage } from "../utils/calculations";
 import "../styles/Game.css";
 import { SoundManager, speakText } from "../utils/soundEffects";
 import SoundControl from "./SoundControl";
 
-function Game() {
+function Game({ gameSettings, setGameSettings }) {
+  const navigate = useNavigate(); // Hook for navigation
+  const [showQuitModal, setShowQuitModal] = useState(false); // State for quit modal
   const [gameState, setGameState] = useState({
-    playerTeam: [],
-    cpuTeam: [],
-    currentTurn: "player",
+    player1Team: [],
+    player2Team: [],
+    currentTurn: "player1",
     selectedSoldier: null,
     airdropActive: false,
     gameOver: false,
@@ -27,13 +32,13 @@ function Game() {
   });
 
   const initializeGame = () => {
-    const playerTeam = createTeam("player");
-    const cpuTeam = createTeam("cpu");
+    const player1Team = createTeam("player1", gameSettings.player1Selection);
+    const player2Team = createTeam("player2", gameSettings.player2Selection);
     setGameState({
       ...gameState,
-      playerTeam,
-      cpuTeam,
-      currentTurn: "player",
+      player1Team,
+      player2Team,
+      currentTurn: "player1",
       selectedSoldier: null,
       gameOver: false,
       lastAction: null,
@@ -41,7 +46,7 @@ function Game() {
   };
 
   const executeCPUTurn = () => {
-    const move = getAIMove(gameState.cpuTeam, gameState.playerTeam);
+    const move = getAIMove(gameState.player2Team, gameState.player1Team);
     if (move) {
       handleAction(move.attacker, move.target);
     }
@@ -53,7 +58,7 @@ function Game() {
 
   // Handle CPU turn
   useEffect(() => {
-    if (gameState.currentTurn === "cpu" && !gameState.gameOver) {
+    if (gameState.currentTurn === "player2" && !gameState.gameOver) {
       const cpuTurnTimeout = setTimeout(() => {
         executeCPUTurn();
       }, 2500); // Add delay for better UX
@@ -64,7 +69,7 @@ function Game() {
 
   const handleSoldierSelect = (soldier) => {
     SoundManager.playSound("UI", "select");
-    if (gameState.currentTurn === "player" && soldier.owner === "player") {
+    if (gameState.currentTurn === "player1" && soldier.owner === "player1") {
       setGameState({
         ...gameState,
         selectedSoldier: soldier,
@@ -73,7 +78,7 @@ function Game() {
   };
 
   const handleTargetSelect = (target) => {
-    if (!gameState.selectedSoldier || target.owner === "player") return;
+    if (!gameState.selectedSoldier || target.owner === "player1") return;
 
     handleAction(gameState.selectedSoldier, target);
   };
@@ -108,8 +113,11 @@ function Game() {
     // this will speak what damage was dealt to which opponent
     // speakText(damageText);
 
-    checkGameState();
-    applyDamage(target.id, damage);
+    const [updatePlayer1Team, updatePlayer2Team] = applyDamage(
+      target.id,
+      damage
+    );
+    checkGameState(updatePlayer1Team, updatePlayer2Team);
   };
 
   const applyDamage = (targetId, damage) => {
@@ -120,20 +128,34 @@ function Game() {
           : soldier
       );
 
+    const updatePlayer1Team = updateTeam(gameState.player1Team);
+    const updatePlayer2Team = updateTeam(gameState.player2Team);
+
     setGameState((prev) => ({
       ...prev,
-      playerTeam: updateTeam(prev.playerTeam),
-      cpuTeam: updateTeam(prev.cpuTeam),
+      player1Team: updatePlayer1Team,
+      player2Team: updatePlayer2Team,
       airdropBonus: false,
     }));
+    return [updatePlayer1Team, updatePlayer2Team];
   };
 
-  const checkGameState = () => {
-    const gameOver = checkGameOver(gameState.playerTeam, gameState.cpuTeam);
+  const checkGameState = (updatePlayer1Team, updatePlayer2Team) => {
+    const gameOver = checkGameOver(updatePlayer1Team, updatePlayer2Team);
     if (gameOver) {
-      const playerWon = gameState.playerTeam.some((s) => s.health > 0);
-      SoundManager.playSound("UI", playerWon ? "victory" : "defeat");
-      setGameState((prev) => ({ ...prev, gameOver: true }));
+      console.log("Game over!");
+
+      const winningPlayer = getWinningPlayer(
+        updatePlayer1Team,
+        updatePlayer2Team
+      );
+      SoundManager.playSound("UI", winningPlayer);
+      SoundManager.playSound("UI", "victory");
+      setGameState((prev) => ({
+        ...prev,
+        gameOver: true,
+        winningPlayer: winningPlayer,
+      }));
     } else {
       triggerAirdropChance();
       switchTurn();
@@ -148,14 +170,14 @@ function Game() {
   };
 
   const switchTurn = () => {
-    if (gameState.currentTurn === "cpu") {
+    if (gameState.currentTurn === "player2") {
       SoundManager.playSound("UI", "player_2");
     } else {
       SoundManager.playSound("UI", "player_1");
     }
     setGameState((prev) => ({
       ...prev,
-      currentTurn: prev.currentTurn === "player" ? "cpu" : "player",
+      currentTurn: prev.currentTurn === "player1" ? "player2" : "player1",
       selectedSoldier: null,
     }));
   };
@@ -163,6 +185,14 @@ function Game() {
   return (
     <div className="game-container">
       <div className="game-header">
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={() => setShowQuitModal(true)}
+          style={{ position: "absolute", top: "10px", left: "10px" }}
+        >
+          Quit Game
+        </Button>
         <TurnIndicator
           currentTurn={gameState.currentTurn}
           selectedSoldier={gameState.selectedSoldier}
@@ -181,15 +211,15 @@ function Game() {
 
       <div className="battlefield">
         <TeamDisplay
-          team={gameState.playerTeam}
+          team={gameState.player1Team}
           onSelect={handleSoldierSelect}
-          isActive={gameState.currentTurn === "player"}
+          isActive={gameState.currentTurn === "player1"}
           selectedSoldier={gameState.selectedSoldier}
         />
         <TeamDisplay
-          team={gameState.cpuTeam}
+          team={gameState.player2Team}
           onSelect={handleTargetSelect}
-          isActive={gameState.currentTurn === "cpu"}
+          isActive={gameState.currentTurn === "player2"}
           selectedSoldier={gameState.selectedSoldier}
         />
       </div>
@@ -209,11 +239,53 @@ function Game() {
       {gameState.gameOver && (
         <GameOverModal
           winner={
-            gameState.playerTeam.some((s) => s.health > 0) ? "Player" : "CPU"
+            gameState.player1Team.some((s) => s.health > 0)
+              ? "Player 1"
+              : "Player 2"
           }
           onRestart={initializeGame}
         />
       )}
+      <Modal
+        open={showQuitModal}
+        onClose={() => setShowQuitModal(false)}
+        aria-labelledby="quit-game-modal"
+        aria-describedby="quit-game-confirmation"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+          }}
+        >
+          <Typography id="quit-game-modal" variant="h6" component="h2">
+            Quit Game
+          </Typography>
+          <Typography id="quit-game-confirmation" sx={{ mt: 2 }}>
+            Are you sure you want to quit the game?
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+            <Button
+              onClick={() => navigate("/")}
+              variant="contained"
+              color="error"
+              sx={{ mr: 2 }}
+            >
+              Yes
+            </Button>
+            <Button onClick={() => setShowQuitModal(false)} variant="outlined">
+              No
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </div>
   );
 }

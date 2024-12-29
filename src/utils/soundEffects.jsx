@@ -24,7 +24,7 @@ class SoundEffect {
 
 // Create sound effects for each soldier type and action
 const SoundEffects = {
-  ASSAULT: {
+  "ASSAULT RIFLE": {
     attack: new SoundEffect("/sounds/assault-attack.wav"),
     hit: new SoundEffect("/sounds/assault-hit.wav"),
     death: new SoundEffect("/sounds/soldier-death.wav"),
@@ -39,7 +39,7 @@ const SoundEffects = {
     heal: new SoundEffect("/sounds/medic-heal.wav"),
     death: new SoundEffect("/sounds/soldier-death.wav"),
   },
-  MACHINE_GUN: {
+  "MACHINE GUN": {
     attack: new SoundEffect("/sounds/machinegun-attack.wav"),
     hit: new SoundEffect("/sounds/machinegun-hit.wav"),
     death: new SoundEffect("/sounds/soldier-death.wav"),

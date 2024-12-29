@@ -1,0 +1,14 @@
+.choose-location {
+    text-align: center;
+    padding: 20px;
+}
+
+.location-list button {
+    width: 200px;
+    margin: 10px;
+    font-size: 18px;
+}
+
+h2 {
+    margin-bottom: 30px;
+}

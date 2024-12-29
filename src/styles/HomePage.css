@@ -1,0 +1,12 @@
+.home-page {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+}
+
+.menu button {
+    width: 200px;
+    font-size: 18px;
+}

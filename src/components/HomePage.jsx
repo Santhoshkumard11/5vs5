@@ -1,24 +1,122 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./HomePage.css";
+import { Box, Button, Typography } from "@mui/material";
 
-const HomePage = () => {
+const HomePage = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
 
+  function handleAgainstPlayer2() {
+    setGameSettings({
+      ...gameSettings,
+      opponentType: "Player 2",
+    });
+
+    navigate("/team");
+  }
+
+  function handleAgainstCPU() {
+    setGameSettings({
+      ...gameSettings,
+      opponentType: "CPU",
+    });
+    navigate("/team");
+  }
+
   return (
-    <div className="home-page">
-      <h1>Five vs Five</h1>
-      <div className="menu">
-        <button onClick={() => navigate("/location")}>Play vs CPU</button>
-        <button onClick={() => navigate("/location")}>Play vs Human</button>
-        <button onClick={() => navigate("/settings")}>Settings</button>
-        <button
-          onClick={() => alert("Rules: Eliminate the enemy team to win.")}
+    <Box
+      sx={{
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #1e88e5, #1565c0)",
+        color: "#ffffff",
+        textAlign: "center",
+      }}
+    >
+      <Typography
+        variant="h2"
+        component="h1"
+        sx={{
+          fontWeight: "bold",
+          marginBottom: "30px",
+          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+        }}
+      >
+        Dishum Dishum - 3 Vs 3
+      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          width: "100%",
+          maxWidth: "400px",
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{
+            padding: "12px 20px",
+            fontSize: "18px",
+            textTransform: "uppercase",
+            fontWeight: "bold",
+            borderRadius: "30px",
+          }}
+          onClick={handleAgainstCPU}
+        >
+          Play vs CPU
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          sx={{
+            padding: "12px 20px",
+            fontSize: "18px",
+            textTransform: "uppercase",
+            fontWeight: "bold",
+            borderRadius: "30px",
+          }}
+          onClick={handleAgainstPlayer2}
+        >
+          Play vs Human
+        </Button>
+        <Button
+          variant="outlined"
+          color="inherit"
+          sx={{
+            padding: "12px 20px",
+            fontSize: "18px",
+            textTransform: "uppercase",
+            fontWeight: "bold",
+            borderRadius: "30px",
+            border: "2px solid #ffffff",
+            color: "#ffffff",
+          }}
+          onClick={() => navigate("/settings")}
+        >
+          Settings
+        </Button>
+        <Button
+          variant="outlined"
+          color="inherit"
+          sx={{
+            padding: "12px 20px",
+            fontSize: "18px",
+            textTransform: "uppercase",
+            fontWeight: "bold",
+            borderRadius: "30px",
+            color: "#ffffff",
+            textDecoration: "underline",
+          }}
+          onClick={() => navigate("/help")}
         >
           Help
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

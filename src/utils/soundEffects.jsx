@@ -51,6 +51,7 @@ const SoundEffects = {
   },
   UI: {
     select: new SoundEffect("/sounds/select.wav"),
+    hit_miss: new SoundEffect("/sounds/hit-miss.wav"),
     error: new SoundEffect("/sounds/error.ogg"),
     victory: new SoundEffect("/sounds/you_win.ogg"),
     defeat: new SoundEffect("/sounds/you_lose.ogg"),

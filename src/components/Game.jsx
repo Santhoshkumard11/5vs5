@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Import for navigation
-import { Button, Modal, Box, Typography } from "@mui/material"; // MUI imports
+import { useNavigate } from "react-router-dom";
+import { Button, Modal, Box, Typography } from "@mui/material";
 import TeamDisplay from "./TeamDisplay";
 import TurnIndicator from "./TurnIndicator";
 import AirdropModal from "./AirdropModal";
@@ -14,12 +14,14 @@ import {
 } from "../utils/gameLogic";
 import { calculateDamage } from "../utils/calculations";
 import "../styles/Game.css";
-import { SoundManager, speakText } from "../utils/soundEffects";
+import { SoundManager } from "../utils/soundEffects";
 import SoundControl from "./SoundControl";
 
+import AlertComponent from "./Alerts";
+
 function Game({ gameSettings, setGameSettings }) {
-  const navigate = useNavigate(); // Hook for navigation
-  const [showQuitModal, setShowQuitModal] = useState(false); // State for quit modal
+  const navigate = useNavigate();
+  const [showQuitModal, setShowQuitModal] = useState(false);
   const [gameState, setGameState] = useState({
     player1Team: [],
     player2Team: [],
@@ -30,6 +32,10 @@ function Game({ gameSettings, setGameSettings }) {
     airdropBonus: false,
     lastAction: null,
   });
+  const [showAlertChooseYourTeamPlayer, setShowAlertChooseYourTeamPlayer] =
+    useState(false);
+
+  const [showAlertNoDamage, setShowAlertNoDamage] = useState(false);
 
   const initializeGame = () => {
     const player1Team = createTeam("player1", gameSettings.player1Selection);
@@ -42,6 +48,9 @@ function Game({ gameSettings, setGameSettings }) {
       selectedSoldier: null,
       gameOver: false,
       lastAction: null,
+      currentRound: 1,
+      player1TeamScore: 0,
+      player2TeamScore: 0,
     });
   };
 
@@ -56,31 +65,48 @@ function Game({ gameSettings, setGameSettings }) {
     initializeGame();
   }, []);
 
-  // Handle CPU turn
   useEffect(() => {
-    if (gameState.currentTurn === "player2" && !gameState.gameOver) {
+    if (
+      gameState.currentTurn === "player2" &&
+      !gameState.gameOver &&
+      gameSettings.opponentType === "CPU"
+    ) {
       const cpuTurnTimeout = setTimeout(() => {
         executeCPUTurn();
-      }, 2500); // Add delay for better UX
+      }, 2500);
 
       return () => clearTimeout(cpuTurnTimeout);
     }
   }, [gameState.currentTurn, gameState.gameOver]);
 
   const handleSoldierSelect = (soldier) => {
-    SoundManager.playSound("UI", "select");
-    if (gameState.currentTurn === "player1" && soldier.owner === "player1") {
+    const currentTeam =
+      gameState.currentTurn === "player1"
+        ? gameState.player1Team
+        : gameState.player2Team;
+
+    if (
+      currentTeam.filter((teamSoldier) => teamSoldier.id === soldier.id)
+        .length !== 0
+    ) {
+      if (gameState.selectedSoldier?.id === soldier.id) {
+        setGameState({
+          ...gameState,
+          selectedSoldier: null,
+        });
+        return;
+      }
       setGameState({
         ...gameState,
         selectedSoldier: soldier,
       });
+    } else {
+      if (gameState.selectedSoldier !== null) {
+        handleAction(gameState.selectedSoldier, soldier);
+      } else {
+        setShowAlertChooseYourTeamPlayer(true);
+      }
     }
-  };
-
-  const handleTargetSelect = (target) => {
-    if (!gameState.selectedSoldier || target.owner === "player1") return;
-
-    handleAction(gameState.selectedSoldier, target);
   };
 
   const handleAction = (attacker, target) => {
@@ -89,14 +115,15 @@ function Game({ gameSettings, setGameSettings }) {
       return;
     }
 
-    // Play attack sound
     SoundManager.playSound(attacker.type.toUpperCase(), "attack");
-
     const damage = calculateDamage(attacker, target, gameState.airdropBonus);
-    // Add slight delay for hit sound
+
     setTimeout(() => {
       if (damage > 0) {
         SoundManager.playSound(attacker.type.toUpperCase(), "hit");
+      } else {
+        SoundManager.playSound("UI", "hit_miss");
+        setShowAlertNoDamage(true);
       }
     }, 200);
 
@@ -108,10 +135,6 @@ function Game({ gameSettings, setGameSettings }) {
         damage: damage,
       },
     }));
-    const damageText = `${attacker.type} dealt ${damage}
-            damage to ${target.type}`;
-    // this will speak what damage was dealt to which opponent
-    // speakText(damageText);
 
     const [updatePlayer1Team, updatePlayer2Team] = applyDamage(
       target.id,
@@ -143,8 +166,6 @@ function Game({ gameSettings, setGameSettings }) {
   const checkGameState = (updatePlayer1Team, updatePlayer2Team) => {
     const gameOver = checkGameOver(updatePlayer1Team, updatePlayer2Team);
     if (gameOver) {
-      console.log("Game over!");
-
       const winningPlayer = getWinningPlayer(
         updatePlayer1Team,
         updatePlayer2Team
@@ -157,24 +178,11 @@ function Game({ gameSettings, setGameSettings }) {
         winningPlayer: winningPlayer,
       }));
     } else {
-      triggerAirdropChance();
       switchTurn();
     }
   };
 
-  const triggerAirdropChance = () => {
-    if (Math.random() / 3 === 0) {
-      SoundManager.playSound("UI", "airdrop");
-      setGameState((prev) => ({ ...prev, airdropActive: true }));
-    }
-  };
-
   const switchTurn = () => {
-    if (gameState.currentTurn === "player2") {
-      SoundManager.playSound("UI", "player_2");
-    } else {
-      SoundManager.playSound("UI", "player_1");
-    }
     setGameState((prev) => ({
       ...prev,
       currentTurn: prev.currentTurn === "player1" ? "player2" : "player1",
@@ -218,7 +226,7 @@ function Game({ gameSettings, setGameSettings }) {
         />
         <TeamDisplay
           team={gameState.player2Team}
-          onSelect={handleTargetSelect}
+          onSelect={handleSoldierSelect}
           isActive={gameState.currentTurn === "player2"}
           selectedSoldier={gameState.selectedSoldier}
         />
@@ -286,6 +294,20 @@ function Game({ gameSettings, setGameSettings }) {
           </Box>
         </Box>
       </Modal>
+      {showAlertChooseYourTeamPlayer && (
+        <AlertComponent
+          message={"Please select a player from your team!"}
+          severity="warning"
+          onClose={() => setShowAlertChooseYourTeamPlayer(false)}
+        />
+      )}
+      {showAlertNoDamage && (
+        <AlertComponent
+          message={"No damage dealt!"}
+          severity="info"
+          onClose={() => setShowAlertNoDamage(false)}
+        />
+      )}
     </div>
   );
 }

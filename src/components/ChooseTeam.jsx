@@ -122,7 +122,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
             bgcolor: "#e8e8e8",
             padding: 1,
             borderRadius: "8px",
-            width: "100%",
+            width: "80%",
           }}
         >
           <Typography>
@@ -163,7 +163,8 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
           color="primary"
           onClick={handleReady}
           disabled={player1Selection.length !== 3 || isPlayer1Ready}
-          sx={{ mt: 2, width: "100%" }}
+          sx={{ mt: 2, width: "25%" }}
+          left="50%"
         >
           {isPlayer1Ready ? "Ready!" : "Ready"}
         </Button>
@@ -222,7 +223,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
             color="primary"
             onClick={handleReady}
             disabled={player2Selection.length !== 3 || isPlayer2Ready}
-            sx={{ mt: 2, width: "100%" }}
+            sx={{ mt: 2, width: "25%" }}
           >
             {isPlayer2Ready ? "Ready!" : "Ready"}
           </Button>

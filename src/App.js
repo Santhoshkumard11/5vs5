@@ -14,7 +14,7 @@ function App() {
     commentaryFlag: false,
     voiceMode: false,
     volume: 0.5,
-    difficulty: "easy",
+    difficultyLevel: "Easy",
     bulletColor: "red",
     player1Selection: [],
     player2Selection: [],

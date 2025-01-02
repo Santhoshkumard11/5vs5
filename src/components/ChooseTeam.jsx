@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { ArrowUpward, ArrowDownward, Delete } from "@mui/icons-material";
 import { SOLDIER_TYPES } from "../constants/soldiers";
+import { levelColors } from "../constants/game";
 
 const TeamSelection = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
@@ -173,7 +174,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
       {/* Center Panel */}
       <Grid item xs={4} sx={{ padding: 2 }}>
         <Typography variant="h4" textAlign="center" gutterBottom>
-          Choose Your Team
+          Choose Your Team - {currentSelection}
         </Typography>
         <Grid container spacing={2}>
           {players.map((player) => (
@@ -229,8 +230,39 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
           </Button>
         )}
       </Grid>
+      {gameSettings.opponentType === "CPU" && (
+        <Box
+          position="fixed"
+          bottom={150}
+          left="50%"
+          sx={{
+            transform: "translateX(-50%)",
+          }}
+        >
+          <Typography>Difficulty Level</Typography>
 
-      {/* Bottom Center: Let's Fight Button */}
+          <Box display="flex" justifyContent="center" gap={2}>
+            {["Easy", "Medium", "Hard", "Insane"].map((level) => {
+              return (
+                <Button
+                  key={level}
+                  variant={
+                    gameSettings.difficultyLevel === level
+                      ? "contained"
+                      : "outlined"
+                  }
+                  color={levelColors[level]}
+                  onClick={() =>
+                    setGameSettings({ ...gameSettings, difficultyLevel: level })
+                  }
+                >
+                  {level}
+                </Button>
+              );
+            })}
+          </Box>
+        </Box>
+      )}
       <Box
         position="fixed"
         bottom={16}

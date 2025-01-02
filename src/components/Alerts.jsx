@@ -24,7 +24,7 @@ function AlertComponent({ message, severity = "info", onClose }) {
     <Snackbar
       open={open}
       onClose={handleClose}
-      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >
       <Alert
         severity={severity}

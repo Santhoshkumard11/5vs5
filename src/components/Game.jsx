@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Modal, Box, Typography } from "@mui/material";
+import { Button, Modal, Box, Typography, LinearProgress } from "@mui/material";
 import TeamDisplay from "./TeamDisplay";
 import TurnIndicator from "./TurnIndicator";
 import AirdropModal from "./AirdropModal";
@@ -18,6 +18,7 @@ import { SoundManager } from "../utils/soundEffects";
 import SoundControl from "./SoundControl";
 
 import AlertComponent from "./Alerts";
+import { levelMoveTimeout } from "../constants/game";
 
 function Game({ gameSettings, setGameSettings }) {
   const navigate = useNavigate();
@@ -36,6 +37,8 @@ function Game({ gameSettings, setGameSettings }) {
     useState(false);
 
   const [showAlertNoDamage, setShowAlertNoDamage] = useState(false);
+  const [countdown, setCountdown] = useState(null);
+  const [progress, setProgress] = useState(100);
 
   const initializeGame = () => {
     const player1Team = createTeam("player1", gameSettings.player1Selection);
@@ -52,6 +55,8 @@ function Game({ gameSettings, setGameSettings }) {
       player1TeamScore: 0,
       player2TeamScore: 0,
     });
+    setCountdown(null);
+    setProgress(100);
   };
 
   const executeCPUTurn = () => {
@@ -79,6 +84,33 @@ function Game({ gameSettings, setGameSettings }) {
     }
   }, [gameState.currentTurn, gameState.gameOver]);
 
+  useEffect(() => {
+    if (!gameState.gameOver && gameSettings.opponentType === "CPU") {
+      const moveTimeout = levelMoveTimeout[gameSettings.difficultyLevel];
+      const totalSeconds = Math.ceil(moveTimeout / 1000);
+      setCountdown(totalSeconds); // Initialize countdown
+      setProgress(100); // Initialize progress bar
+
+      const playerMoveInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev > 1) {
+            const newProgress = ((prev - 1) / totalSeconds) * 100;
+            setProgress(newProgress);
+            return prev - 1;
+          }
+          clearInterval(playerMoveInterval);
+          if (gameSettings.opponentType === "CPU" && !gameState.gameOver) {
+            executeCPUTurn();
+          } else {
+            switchTurn(); // Trigger turn switch when the timer ends
+          }
+          return null;
+        });
+      }, 1000);
+
+      return () => clearInterval(playerMoveInterval);
+    }
+  }, [gameState.currentTurn]);
   const handleSoldierSelect = (soldier) => {
     const currentTeam =
       gameState.currentTurn === "player1"
@@ -144,23 +176,25 @@ function Game({ gameSettings, setGameSettings }) {
   };
 
   const applyDamage = (targetId, damage) => {
-    const updateTeam = (team) =>
+    const updateTeamHealth = (team) =>
       team.map((soldier) =>
         soldier.id === targetId
           ? { ...soldier, health: Math.max(0, soldier.health - damage) }
           : soldier
       );
 
-    const updatePlayer1Team = updateTeam(gameState.player1Team);
-    const updatePlayer2Team = updateTeam(gameState.player2Team);
+    const updatedTeams = {
+      player1Team: updateTeamHealth(gameState.player1Team),
+      player2Team: updateTeamHealth(gameState.player2Team),
+    };
 
     setGameState((prev) => ({
       ...prev,
-      player1Team: updatePlayer1Team,
-      player2Team: updatePlayer2Team,
+      ...updatedTeams,
       airdropBonus: false,
     }));
-    return [updatePlayer1Team, updatePlayer2Team];
+
+    return [updatedTeams.player1Team, updatedTeams.player2Team];
   };
 
   const checkGameState = (updatePlayer1Team, updatePlayer2Team) => {
@@ -205,6 +239,18 @@ function Game({ gameSettings, setGameSettings }) {
           currentTurn={gameState.currentTurn}
           selectedSoldier={gameState.selectedSoldier}
         />
+        {countdown !== null && (
+          <div className="timer-container">
+            <Typography variant="h6" className="timer">
+              Time left: {countdown}s
+            </Typography>
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              className="progress-bar"
+            />
+          </div>
+        )}
         <SoundControl />
       </div>
 

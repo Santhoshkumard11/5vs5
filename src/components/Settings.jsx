@@ -15,7 +15,7 @@ import {
 import { ArrowUpward, ArrowDownward, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-const Settings = () => {
+const Settings = ({ gameSettings }) => {
   const navigate = useNavigate();
   const [volume, setVolume] = useState(50);
   const [bulletColor, setBulletColor] = useState("#ff0000");

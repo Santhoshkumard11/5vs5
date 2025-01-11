@@ -18,6 +18,7 @@ function App() {
     bulletColor: "red",
     player1Selection: [],
     player2Selection: [],
+    gameSoundMode: "human",
   });
 
   return (

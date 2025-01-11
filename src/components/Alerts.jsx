@@ -9,7 +9,7 @@ function AlertComponent({ message, severity = "info", onClose }) {
     const timer = setTimeout(() => {
       setOpen(false);
       if (onClose) onClose();
-    }, 3000);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [onClose]);

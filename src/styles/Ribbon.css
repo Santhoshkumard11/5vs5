@@ -1,0 +1,113 @@
+/* Top ribbon container */
+.top-ribbon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #1c1c1e, #2d2d30);
+    padding: 20px 40px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 96%;
+    z-index: 100;
+    color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* Player sections */
+.player-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 30%;
+}
+
+.player-section.right {
+    align-items: flex-end;
+}
+
+/* Parallelogram shape for player names */
+.parallelogram {
+    position: relative;
+    background: #E1FDF4;
+    transform: skew(-20deg);
+    padding: 10px 20px;
+    margin-bottom: 10px;
+}
+
+.parallelogram .player-name {
+    position: relative;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transform: skew(20deg);
+    color: rgb(0, 0, 0);
+}
+
+/* Round indicators */
+.rounds-container {
+    display: flex;
+    justify-content: space-between;
+    /* Space between the two sides */
+    gap: 8px;
+    margin: 2% 0 0 0;
+}
+
+.rounds-container.left,
+.rounds-container.right {
+    display: flex;
+    /* Ensure these are flex containers */
+    flex-direction: row;
+    /* Align rounds horizontally */
+}
+
+.rounds-container.left {
+    justify-content: flex-end;
+    /* Align rounds to the right inside left container */
+}
+
+.rounds-container.right {
+    justify-content: flex-start;
+    /* Align rounds to the left inside right container */
+}
+
+.round-shape {
+    width: 30px;
+    height: 20px;
+    background: #555;
+    transform: skew(-20deg);
+}
+
+.round-shape.won {
+    background: #463535;
+}
+
+/* Parallelogram health bar container */
+.team-health-parallelogram {
+    position: relative;
+    height: 20px;
+    width: 100%;
+    background: #333;
+    transform: skew(-20deg);
+    overflow: hidden;
+    border: 2px solid #555;
+    margin-top: 10px;
+}
+
+.team-health-parallelogram::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: #333;
+}
+
+/* Health fill for parallelogram */
+.health-fill-parallelogram {
+    height: 100%;
+    background: linear-gradient(90deg, #E1FDF4, #82A096);
+    transform: skew(20deg);
+    transition: width 0.3s ease-in-out;
+}

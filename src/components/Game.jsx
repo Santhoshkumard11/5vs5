@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Modal, Box, Typography, LinearProgress } from "@mui/material";
 import TeamDisplay from "./TeamDisplay";
@@ -19,6 +19,8 @@ import SoundControl from "./SoundControl";
 
 import AlertComponent from "./Alerts";
 import { levelMoveTimeout } from "../constants/game";
+import { PlayersStats } from "./Stats";
+import RibbonDisplay from "./RibbonDisplay";
 
 function Game({ gameSettings, setGameSettings }) {
   const navigate = useNavigate();
@@ -32,6 +34,24 @@ function Game({ gameSettings, setGameSettings }) {
     gameOver: false,
     airdropBonus: false,
     lastAction: null,
+    metrics: {
+      player1: { successfulHits: 0, misses: 0 },
+      player2: { successfulHits: 0, misses: 0 },
+    },
+    roundsWon: {
+      player1: 0,
+      player2: 0,
+    },
+    currentRound: 1,
+    finalWinner: null,
+    player1: {
+      name: "Player 1",
+      teamHealth: 100, // Percentage health remaining
+    },
+    player2: {
+      name: "Player 2",
+      teamHealth: 100, // Percentage health remaining
+    },
   });
   const [showAlertChooseYourTeamPlayer, setShowAlertChooseYourTeamPlayer] =
     useState(false);
@@ -40,7 +60,7 @@ function Game({ gameSettings, setGameSettings }) {
   const [countdown, setCountdown] = useState(null);
   const [progress, setProgress] = useState(100);
 
-  const initializeGame = () => {
+  const initializeGame = useCallback(() => {
     const player1Team = createTeam("player1", gameSettings.player1Selection);
     const player2Team = createTeam("player2", gameSettings.player2Selection);
     setGameState({
@@ -57,6 +77,14 @@ function Game({ gameSettings, setGameSettings }) {
     });
     setCountdown(null);
     setProgress(100);
+  });
+
+  const startNewRound = () => {
+    initializeGame();
+    setGameState((prev) => ({
+      ...prev,
+      currentRound: prev.currentRound + 1,
+    }));
   };
 
   const executeCPUTurn = () => {
@@ -100,8 +128,6 @@ function Game({ gameSettings, setGameSettings }) {
           }
           clearInterval(playerMoveInterval);
           if (gameSettings.opponentType === "CPU" && !gameState.gameOver) {
-            executeCPUTurn();
-          } else {
             switchTurn(); // Trigger turn switch when the timer ends
           }
           return null;
@@ -110,7 +136,8 @@ function Game({ gameSettings, setGameSettings }) {
 
       return () => clearInterval(playerMoveInterval);
     }
-  }, [gameState.currentTurn]);
+  }, [gameState.currentTurn, gameState.gameOver]);
+
   const handleSoldierSelect = (soldier) => {
     const currentTeam =
       gameState.currentTurn === "player1"
@@ -141,6 +168,12 @@ function Game({ gameSettings, setGameSettings }) {
     }
   };
 
+  const sumTeamHealth = (team) => {
+    return Math.round(
+      team.reduce((total, character) => total + character.health, 0) / 3
+    );
+  };
+
   const handleAction = (attacker, target) => {
     if (!isValidAction(attacker, target)) {
       SoundManager.playSound("UI", "error");
@@ -153,9 +186,11 @@ function Game({ gameSettings, setGameSettings }) {
     setTimeout(() => {
       if (damage > 0) {
         SoundManager.playSound(attacker.type.toUpperCase(), "hit");
+        updateMetrics(attacker.owner, true); // Successful hit
       } else {
         SoundManager.playSound("UI", "hit_miss");
         setShowAlertNoDamage(true);
+        updateMetrics(attacker.owner, false); // Miss
       }
     }, 200);
 
@@ -173,6 +208,37 @@ function Game({ gameSettings, setGameSettings }) {
       damage
     );
     checkGameState(updatePlayer1Team, updatePlayer2Team);
+    setGameState((prev) => ({
+      ...prev,
+      player1: {
+        ...prev.player1,
+        teamHealth: sumTeamHealth(updatePlayer1Team),
+      },
+    }));
+    setGameState((prev) => ({
+      ...prev,
+      player2: {
+        ...prev.player2,
+        teamHealth: sumTeamHealth(updatePlayer2Team),
+      },
+    }));
+  };
+
+  const updateMetrics = (player, isHit) => {
+    setGameState((prev) => ({
+      ...prev,
+      metrics: {
+        ...prev.metrics,
+        [player]: {
+          successfulHits: isHit
+            ? prev.metrics[player].successfulHits + 1
+            : prev.metrics[player].successfulHits,
+          misses: !isHit
+            ? prev.metrics[player].misses + 1
+            : prev.metrics[player].misses,
+        },
+      },
+    }));
   };
 
   const applyDamage = (targetId, damage) => {
@@ -204,15 +270,36 @@ function Game({ gameSettings, setGameSettings }) {
         updatePlayer1Team,
         updatePlayer2Team
       );
-      SoundManager.playSound("UI", winningPlayer);
-      SoundManager.playSound("UI", "victory");
-      setGameState((prev) => ({
-        ...prev,
-        gameOver: true,
-        winningPlayer: winningPlayer,
-      }));
+
+      setGameState((prev) => {
+        const updatedRoundsWon = {
+          ...prev.roundsWon,
+          [winningPlayer]: prev.roundsWon[winningPlayer] + 1,
+        };
+
+        const isFinalWinner =
+          updatedRoundsWon[winningPlayer] === 3 ? winningPlayer : null;
+
+        return {
+          ...prev,
+          gameOver: true,
+          winningPlayer: winningPlayer,
+          roundsWon: updatedRoundsWon,
+          finalWinner: isFinalWinner,
+        };
+      });
+
+      if (gameSettings.soundEffects) {
+        SoundManager.playSound("UI", "victory");
+      }
     } else {
       switchTurn();
+    }
+  };
+
+  const handleNextRound = () => {
+    if (!gameState.finalWinner) {
+      startNewRound();
     }
   };
 
@@ -226,19 +313,22 @@ function Game({ gameSettings, setGameSettings }) {
 
   return (
     <div className="game-container">
+      <Button
+        variant="outlined"
+        color="error"
+        onClick={() => setShowQuitModal(true)}
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "47%",
+          zIndex: "1000",
+        }}
+      >
+        Quit Game
+      </Button>
       <div className="game-header">
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={() => setShowQuitModal(true)}
-          style={{ position: "absolute", top: "10px", left: "10px" }}
-        >
-          Quit Game
-        </Button>
-        <TurnIndicator
-          currentTurn={gameState.currentTurn}
-          selectedSoldier={gameState.selectedSoldier}
-        />
+        <RibbonDisplay gameState={gameState} />
+
         {countdown !== null && (
           <div className="timer-container">
             <Typography variant="h6" className="timer">
@@ -253,6 +343,109 @@ function Game({ gameSettings, setGameSettings }) {
         )}
         <SoundControl />
       </div>
+
+      <PlayersStats gameState={gameState} />
+
+      {/* Game Over Modal for Each Round */}
+      {gameState.gameOver && !gameState.finalWinner && (
+        <Modal open={gameState.gameOver} onClose={() => {}}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.default",
+              borderRadius: 3,
+              boxShadow: 24,
+              p: 4,
+              width: { xs: "90%", sm: "400px" },
+            }}
+          >
+            <Typography
+              variant="h5"
+              component="h2"
+              align="center"
+              sx={{ fontWeight: "bold", mb: 2 }}
+            >
+              🎉 Round Over 🎉
+            </Typography>
+            <Typography
+              variant="body1"
+              align="center"
+              sx={{ mb: 3, color: "text.secondary" }}
+            >
+              {gameState.winningPlayer === "player1" ? "Player 1" : "Player 2"}{" "}
+              wins this round!
+            </Typography>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                onClick={handleNextRound}
+                variant="contained"
+                color="primary"
+                sx={{ textTransform: "none", px: 4 }}
+              >
+                Start Next Round
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+      )}
+
+      {/* Final Game Over Modal */}
+      {gameState.finalWinner && (
+        <Modal open={Boolean(gameState.finalWinner)} onClose={() => {}}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.default",
+              borderRadius: 3,
+              boxShadow: 24,
+              p: 4,
+              width: { xs: "90%", sm: "450px" },
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              variant="h4"
+              component="h2"
+              sx={{ fontWeight: "bold", color: "error.main", mb: 2 }}
+            >
+              🎯 Game Over 🎯
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3, color: "text.secondary" }}>
+              {gameState.finalWinner === "player1" ? "Player 1" : "Player 2"}{" "}
+              emerges victorious!
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                gap: 2,
+                alignItems: "center",
+                mt: 4,
+              }}
+            >
+              <Button
+                onClick={() => navigate("/")}
+                variant="contained"
+                color="success"
+                sx={{
+                  px: 4,
+                  py: 1.5,
+                  fontWeight: "bold",
+                  textTransform: "none",
+                }}
+              >
+                🏠 Back to Home
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+      )}
 
       {gameState.lastAction && (
         <div className="action-log">

@@ -21,6 +21,7 @@ const Settings = ({ gameSettings }) => {
   const [bulletColor, setBulletColor] = useState("#ff0000");
   const [commentary, setCommentary] = useState(false);
   const [speechPlay, setSpeechPlay] = useState(false);
+  const [gameSound, setGameSound] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [soldierNames, setSoldierNames] = useState([
     "Assault Rifle",
@@ -185,6 +186,17 @@ const Settings = ({ gameSettings }) => {
       </Select>
 
       {/* Toggles */}
+      <FormControlLabel
+        control={
+          <Switch
+            checked={gameSound}
+            onChange={(e) => setGameSound(e.target.checked)}
+            color="primary"
+          />
+        }
+        label="Enable Human Game Sound"
+        sx={{ marginBottom: "20px", color: "#ffffff" }}
+      />
       <FormControlLabel
         control={
           <Switch

@@ -29,15 +29,15 @@
     display: flex;
     justify-content: space-between;
     gap: 40px;
-    margin-top: 20px;
     position: relative;
+    margin-top: 10%;
 }
 
 .battlefield::after {
     content: "VS";
     position: absolute;
-    left: 50%;
-    top: 50%;
+    margin-left: 50%;
+    margin-top: 30%;
     transform: translate(-50%, -50%);
     font-size: 2em;
     font-weight: bold;

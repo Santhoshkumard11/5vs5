@@ -16,10 +16,12 @@ function TurnIndicator({ currentTurn, selectedSoldier, opponentType }) {
               : "🎮 Player 2 Turn"}
           </h2>
         )}
-        {selectedSoldier && (
+        {selectedSoldier ? (
           <p className="selected-info">
             Selected: {selectedSoldier.type} ({selectedSoldier.health} HP)
           </p>
+        ) : (
+          <p>...</p>
         )}
         <div className="turn-instructions">
           {currentTurn === "player1" ? (

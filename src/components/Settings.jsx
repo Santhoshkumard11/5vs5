@@ -11,15 +11,24 @@ import {
   FormControlLabel,
   Modal,
   IconButton,
+  Stack,
+  Grid,
+  Grid2,
 } from "@mui/material";
-import { ArrowUpward, ArrowDownward, Close } from "@mui/icons-material";
+import {
+  ArrowUpward,
+  ArrowDownward,
+  Close,
+  VolumeUp,
+  VolumeDown,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-const Settings = ({ gameSettings }) => {
+const Settings = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
-  const [volume, setVolume] = useState(50);
+  const [volume, setVolume] = useState(0.5);
   const [bulletColor, setBulletColor] = useState("#ff0000");
-  const [commentary, setCommentary] = useState(false);
+  const [commentary, setCommentary] = useState(true);
   const [speechPlay, setSpeechPlay] = useState(false);
   const [gameSound, setGameSound] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,7 +54,13 @@ const Settings = ({ gameSettings }) => {
       setSoldierNames(updatedNames);
     }
   };
+
   const handleBackToMenu = () => {
+    setGameSettings((prevSettings) => ({
+      ...prevSettings,
+      commentaryFlag: commentary,
+      volume: volume,
+    }));
     navigate("/");
   };
 
@@ -63,7 +78,6 @@ const Settings = ({ gameSettings }) => {
         padding: "20px",
       }}
     >
-      {/* Back to Main Menu Button */}
       <Button
         variant="outlined"
         color="inherit"
@@ -85,143 +99,165 @@ const Settings = ({ gameSettings }) => {
         component="h1"
         sx={{
           fontWeight: "bold",
-          marginBottom: "20px",
+          marginBottom: "2%",
           textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
         }}
       >
         Settings
       </Typography>
-
-      {/* Soldier Customization */}
-      <Typography variant="h5" sx={{ marginBottom: "10px" }}>
-        Customize Soldier Names
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 2,
-          marginBottom: "20px",
-        }}
-      >
-        {soldierNames.map((name, index) => (
+      <Grid2 container spacing={4} sx={12}>
+        {/* Left Column */}
+        <Grid2 item xs={12} md={6}>
+          {/* Soldier Customization */}
+          <Typography variant="h5" sx={{ marginBottom: "10px" }}>
+            Customize Soldier Names
+          </Typography>
           <Box
-            key={index}
             sx={{
               display: "flex",
-              alignItems: "center",
-              backgroundColor: "#ffffff",
-              color: "#000",
-              padding: "10px",
-              borderRadius: "8px",
-              width: "300px",
-              justifyContent: "space-between",
+              flexDirection: "column",
+              gap: 2,
+              marginBottom: "20px",
             }}
           >
-            <TextField
-              variant="outlined"
-              value={name}
-              onChange={(e) => {
-                const updatedNames = [...soldierNames];
-                updatedNames[index] = e.target.value;
-                setSoldierNames(updatedNames);
-              }}
-              sx={{ width: "70%" }}
-            />
-            <Box>
-              <IconButton
-                onClick={() => moveSoldier(index, -1)}
-                disabled={index === 0}
-                sx={{ color: index === 0 ? "rgba(0, 0, 0, 0.3)" : "#000" }}
-              >
-                <ArrowUpward />
-              </IconButton>
-              <IconButton
-                onClick={() => moveSoldier(index, 1)}
-                disabled={index === soldierNames.length - 1}
+            {soldierNames.map((name, index) => (
+              <Box
+                key={index}
                 sx={{
-                  color:
-                    index === soldierNames.length - 1
-                      ? "rgba(0, 0, 0, 0.3)"
-                      : "#000",
+                  display: "flex",
+                  alignItems: "center",
+                  backgroundColor: "#ffffff",
+                  color: "#000",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  justifyContent: "space-between",
                 }}
               >
-                <ArrowDownward />
-              </IconButton>
-            </Box>
+                <TextField
+                  variant="outlined"
+                  value={name}
+                  onChange={(e) => {
+                    const updatedNames = [...soldierNames];
+                    updatedNames[index] = e.target.value;
+                    setSoldierNames(updatedNames);
+                  }}
+                  sx={{ width: "70%" }}
+                />
+                <Box>
+                  <IconButton
+                    onClick={() => moveSoldier(index, -1)}
+                    disabled={index === 0}
+                    sx={{ color: index === 0 ? "rgba(0, 0, 0, 0.3)" : "#000" }}
+                  >
+                    <ArrowUpward />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => moveSoldier(index, 1)}
+                    disabled={index === soldierNames.length - 1}
+                    sx={{
+                      color:
+                        index === soldierNames.length - 1
+                          ? "rgba(0, 0, 0, 0.3)"
+                          : "#000",
+                    }}
+                  >
+                    <ArrowDownward />
+                  </IconButton>
+                </Box>
+              </Box>
+            ))}
           </Box>
-        ))}
-      </Box>
+        </Grid2>
 
-      {/* Volume Control */}
-      <Typography variant="h5" sx={{ marginBottom: "10px" }}>
-        Volume
-      </Typography>
-      <Slider
-        value={volume}
-        onChange={(e, value) => setVolume(value)}
-        aria-label="Volume"
-        valueLabelDisplay="auto"
-        sx={{ width: "300px", marginBottom: "20px", color: "#ffffff" }}
-      />
+        {/* Right Column */}
+        <Grid2 item xs={12} md={6} alignItems={"start"}>
+          {/* Volume Control */}
+          <Stack
+            spacing={2}
+            direction="row"
+            sx={{ alignItems: "start", mb: 3 }}
+          >
+            <VolumeDown />
+            <Slider
+              value={volume}
+              onChange={(e, value) => setVolume(value)}
+              aria-label="Volume"
+              valueLabelDisplay="auto"
+              min="0"
+              max="1"
+              step="0.1"
+              sx={{ width: "300px", color: "#ffffff" }}
+            />
+            <VolumeUp />
+          </Stack>
 
-      {/* Bullet Color */}
-      <Typography variant="h5" sx={{ marginBottom: "10px" }}>
-        Bullet Color
-      </Typography>
-      <Select
-        value={bulletColor}
-        onChange={(e) => setBulletColor(e.target.value)}
-        sx={{
-          backgroundColor: "#ffffff",
-          width: "300px",
-          borderRadius: "8px",
-          marginBottom: "20px",
-        }}
-      >
-        <MenuItem value="#ff0000">Red</MenuItem>
-        <MenuItem value="#00ff00">Green</MenuItem>
-        <MenuItem value="#0000ff">Blue</MenuItem>
-      </Select>
+          {/* Bullet Color */}
+          <Box marginTop={3} alignContent={"start"}>
+            <Typography variant="h5" sx={{ marginBottom: "10px" }}>
+              Bullet Color
+            </Typography>
+            <Select
+              value={bulletColor}
+              onChange={(e) => setBulletColor(e.target.value)}
+              sx={{
+                backgroundColor: "#ffffff",
+                width: "150px",
+                borderRadius: "8px",
+                marginBottom: "20px",
+              }}
+            >
+              <MenuItem value="#ff0000">Red</MenuItem>
+              <MenuItem value="#00ff00">Green</MenuItem>
+              <MenuItem value="#0000ff">Blue</MenuItem>
+            </Select>
+          </Box>
 
-      {/* Toggles */}
-      <FormControlLabel
-        control={
-          <Switch
-            checked={gameSound}
-            onChange={(e) => setGameSound(e.target.checked)}
-            color="primary"
-          />
-        }
-        label="Enable Human Game Sound"
-        sx={{ marginBottom: "20px", color: "#ffffff" }}
-      />
-      <FormControlLabel
-        control={
-          <Switch
-            checked={commentary}
-            onChange={(e) => setCommentary(e.target.checked)}
-            color="primary"
-          />
-        }
-        label="Enable AI Commentary"
-        sx={{ marginBottom: "20px", color: "#ffffff" }}
-      />
-      <FormControlLabel
-        control={
-          <Switch
-            checked={speechPlay}
-            onChange={(e) => setSpeechPlay(e.target.checked)}
-            color="primary"
-          />
-        }
-        label="Enable Speech Play"
-        sx={{ marginBottom: "20px", color: "#ffffff" }}
-      />
+          {/* Toggles */}
+          <Box marginTop={3}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={gameSound}
+                  onChange={(e) => setGameSound(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="Enable Human Game Sound"
+              sx={{ marginBottom: "20px", color: "#ffffff" }}
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={commentary}
+                  onChange={(e) => setCommentary(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="Enable AI Commentary"
+              sx={{ marginBottom: "20px", color: "#ffffff" }}
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={speechPlay}
+                  onChange={(e) => setSpeechPlay(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="Enable Speech Play"
+              sx={{ marginBottom: "20px", color: "#ffffff" }}
+            />
+          </Box>
+        </Grid2>
+      </Grid2>
 
       {/* Show Controls */}
-      <Button variant="contained" color="secondary" onClick={handleOpenModal}>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleOpenModal}
+        sx={{ marginTop: "20px" }}
+      >
         Show Controls
       </Button>
 

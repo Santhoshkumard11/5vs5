@@ -21,6 +21,19 @@ import AlertComponent from "./Alerts";
 import { levelMoveTimeout } from "../constants/game";
 import { PlayersStats } from "./Stats";
 import RibbonDisplay from "./RibbonDisplay";
+import getCommentaryText from "../utils/bedrock";
+
+const synth = window.speechSynthesis;
+
+const voices = synth.getVoices();
+
+const maleVoice = voices.filter(
+  (voice) => voice.name.includes("Daniel") && voice.lang === "en-GB"
+)[0];
+
+const femaleVoice = voices.filter(
+  (voice) => voice.name.includes("Samantha") && voice.lang === "en-US"
+)[0];
 
 function Game({ gameSettings, setGameSettings }) {
   const navigate = useNavigate();
@@ -79,6 +92,23 @@ function Game({ gameSettings, setGameSettings }) {
     setProgress(100);
   });
 
+  const handleTextToSpeech = (text, character = "female") => {
+    if (!window.speechSynthesis) {
+      alert("Text-to-Speech is not supported in this browser.");
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US"; // Set the language (optional)
+    // female voice
+    utterance.voice = femaleVoice;
+
+    if (character === "male") {
+      utterance.voice = maleVoice;
+    }
+    window.speechSynthesis.speak(utterance);
+  };
+
   const startNewRound = () => {
     initializeGame();
     setGameState((prev) => ({
@@ -96,6 +126,7 @@ function Game({ gameSettings, setGameSettings }) {
 
   useEffect(() => {
     initializeGame();
+    handleTextToSpeech("The game starts now!");
   }, []);
 
   useEffect(() => {
@@ -121,7 +152,7 @@ function Game({ gameSettings, setGameSettings }) {
 
       const playerMoveInterval = setInterval(() => {
         setCountdown((prev) => {
-          if (prev > 1) {
+          if (prev > 0) {
             const newProgress = ((prev - 1) / totalSeconds) * 100;
             setProgress(newProgress);
             return prev - 1;
@@ -174,11 +205,54 @@ function Game({ gameSettings, setGameSettings }) {
     );
   };
 
+  async function handleCommentary() {
+    const gameContext = {
+      player1: gameState.player1.name,
+      p1SuccessfulHits: gameState.metrics.player1.successfulHits,
+      p1HitMiss: gameState.metrics.player1.misses,
+      p1t1Name: gameState.player1Team[0].type,
+      p1t1health: gameState.player1Team[0].health,
+      p1t2Name: gameState.player1Team[1].type,
+      p1t2health: gameState.player1Team[1].health,
+      p1t3Name: gameState.player1Team[2].type,
+      p1t3health: gameState.player1Team[2].health,
+      player2: gameState.player2.name,
+      p2SuccessfulHits: gameState.metrics.player2.successfulHits,
+      p2HitMiss: gameState.metrics.player2.misses,
+      p2t1Name: gameState.player2Team[0].type,
+      p2t1health: gameState.player2Team[0].health,
+      p2t2Name: gameState.player2Team[1].type,
+      p2t2health: gameState.player2Team[1].health,
+      p2t3Name: gameState.player2Team[2].type,
+      p2t3health: gameState.player2Team[2].health,
+      currentPlayerName:
+        gameState.currentTurn === "player1"
+          ? gameState.player1.name
+          : gameState.player2.name,
+      oppositePlayerName:
+        gameState.currentTurn === "player1"
+          ? gameState.player2.name
+          : gameState.player1.name,
+      currentPlayerTeamMember: gameState.selectedSoldier?.type || "",
+      opponentTeamMember: gameState.lastAction?.target || "",
+      currentDamage: gameState.lastAction?.damage || 0,
+      currentPlayerTimeLeft: countdown || 0,
+      currentRound: gameState.currentRound,
+      p1RoundWins: gameState.roundsWon.player1,
+      p2RoundWins: gameState.roundsWon.player2,
+    };
+
+    const latestCommentaryText = await getCommentaryText(gameContext);
+    handleTextToSpeech(latestCommentaryText.male, "male");
+    handleTextToSpeech(latestCommentaryText.female, "female");
+  }
+
   const handleAction = (attacker, target) => {
     if (!isValidAction(attacker, target)) {
       SoundManager.playSound("UI", "error");
       return;
     }
+    if (gameSettings.commentaryFlag) handleCommentary();
 
     SoundManager.playSound(attacker.type.toUpperCase(), "attack");
     const damage = calculateDamage(attacker, target, gameState.airdropBonus);
@@ -327,20 +401,12 @@ function Game({ gameSettings, setGameSettings }) {
         Quit Game
       </Button>
       <div className="game-header">
-        <RibbonDisplay gameState={gameState} />
-
-        {countdown !== null && (
-          <div className="timer-container">
-            <Typography variant="h6" className="timer">
-              Time left: {countdown}s
-            </Typography>
-            <LinearProgress
-              variant="determinate"
-              value={progress}
-              className="progress-bar"
-            />
-          </div>
-        )}
+        <RibbonDisplay
+          gameState={gameState}
+          countdown={countdown}
+          progress={progress}
+          opponentType={gameSettings.opponentType}
+        />
         <SoundControl />
       </div>
 

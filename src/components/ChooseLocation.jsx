@@ -19,7 +19,7 @@ const locations = [
   { name: "Seattle", image: "img/seattle.jpg" },
 ];
 
-const ChooseLocation = () => {
+const ChooseLocation = ({ setGameSettings }) => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -40,7 +40,13 @@ const ChooseLocation = () => {
 
   const handleContinue = () => {
     if (selectedLocation) {
-      navigate("/game", { state: { location: selectedLocation } });
+      setGameSettings((prevSettings) => ({
+        ...prevSettings,
+        locationImagePath: "./img/" + selectedLocation + ".jpg",
+        locationName: selectedLocation,
+      }));
+
+      navigate("/team");
     } else {
       alert("Please select a location to continue.");
     }
@@ -87,11 +93,14 @@ const ChooseLocation = () => {
         component="h1"
         sx={{
           fontWeight: "bold",
-          marginBottom: "20px",
+          marginBottom: "10px",
           textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
         }}
       >
         Choose Your Battle Location
+      </Typography>
+      <Typography component="h6" variant="h6" marginBottom={4}>
+        (click on the picture to select)
       </Typography>
 
       <Box

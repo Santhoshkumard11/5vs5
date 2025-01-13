@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Modal, Box, Typography, LinearProgress } from "@mui/material";
+import { Button, Modal, Box, Typography } from "@mui/material";
 import TeamDisplay from "./TeamDisplay";
-import TurnIndicator from "./TurnIndicator";
 import AirdropModal from "./AirdropModal";
 import GameOverModal from "./GameOverModal";
 import {
@@ -11,6 +10,7 @@ import {
   checkGameOver,
   getAIMove,
   getWinningPlayer,
+  sendAudioTextToPythonServer,
 } from "../utils/gameLogic";
 import { calculateDamage } from "../utils/calculations";
 import "../styles/Game.css";
@@ -22,18 +22,6 @@ import { levelMoveTimeout } from "../constants/game";
 import { PlayersStats } from "./Stats";
 import RibbonDisplay from "./RibbonDisplay";
 import getCommentaryText from "../utils/bedrock";
-
-const synth = window.speechSynthesis;
-
-const voices = synth.getVoices();
-
-const maleVoice = voices.filter(
-  (voice) => voice.name.includes("Daniel") && voice.lang === "en-GB"
-)[0];
-
-const femaleVoice = voices.filter(
-  (voice) => voice.name.includes("Samantha") && voice.lang === "en-US"
-)[0];
 
 function Game({ gameSettings, setGameSettings }) {
   const navigate = useNavigate();
@@ -72,6 +60,20 @@ function Game({ gameSettings, setGameSettings }) {
   const [showAlertNoDamage, setShowAlertNoDamage] = useState(false);
   const [countdown, setCountdown] = useState(null);
   const [progress, setProgress] = useState(100);
+  const moveTimeout = levelMoveTimeout[gameSettings.difficultyLevel];
+  const totalSeconds = Math.ceil(moveTimeout / 1000);
+
+  const synth = window.speechSynthesis;
+
+  const voices = synth.getVoices();
+
+  const femaleVoice = voices.filter(
+    (voice) => voice.name.includes("Samantha") && voice.lang === "en-US"
+  )[0];
+
+  const maleVoice = voices.filter(
+    (voice) => voice.name.includes("Daniel") && voice.lang === "en-GB"
+  )[0];
 
   const initializeGame = useCallback(() => {
     const player1Team = createTeam("player1", gameSettings.player1Selection);
@@ -105,6 +107,7 @@ function Game({ gameSettings, setGameSettings }) {
 
     if (character === "male") {
       utterance.voice = maleVoice;
+      utterance.lang = "en-GB";
     }
     window.speechSynthesis.speak(utterance);
   };
@@ -145,8 +148,6 @@ function Game({ gameSettings, setGameSettings }) {
 
   useEffect(() => {
     if (!gameState.gameOver && gameSettings.opponentType === "CPU") {
-      const moveTimeout = levelMoveTimeout[gameSettings.difficultyLevel];
-      const totalSeconds = Math.ceil(moveTimeout / 1000);
       setCountdown(totalSeconds); // Initialize countdown
       setProgress(100); // Initialize progress bar
 
@@ -205,7 +206,7 @@ function Game({ gameSettings, setGameSettings }) {
     );
   };
 
-  async function handleCommentary() {
+  async function handleCommentary(target, damage) {
     const gameContext = {
       player1: gameState.player1.name,
       p1SuccessfulHits: gameState.metrics.player1.successfulHits,
@@ -234,8 +235,8 @@ function Game({ gameSettings, setGameSettings }) {
           ? gameState.player2.name
           : gameState.player1.name,
       currentPlayerTeamMember: gameState.selectedSoldier?.type || "",
-      opponentTeamMember: gameState.lastAction?.target || "",
-      currentDamage: gameState.lastAction?.damage || 0,
+      opponentTeamMember: target || "",
+      currentDamage: damage || 0,
       currentPlayerTimeLeft: countdown || 0,
       currentRound: gameState.currentRound,
       p1RoundWins: gameState.roundsWon.player1,
@@ -243,8 +244,13 @@ function Game({ gameSettings, setGameSettings }) {
     };
 
     const latestCommentaryText = await getCommentaryText(gameContext);
-    handleTextToSpeech(latestCommentaryText.male, "male");
-    handleTextToSpeech(latestCommentaryText.female, "female");
+
+    if (gameSettings.pollyCommentary) {
+      sendAudioTextToPythonServer(latestCommentaryText);
+    } else {
+      handleTextToSpeech(latestCommentaryText.male, "male");
+      handleTextToSpeech(latestCommentaryText.female, "female");
+    }
   }
 
   const handleAction = (attacker, target) => {
@@ -252,10 +258,11 @@ function Game({ gameSettings, setGameSettings }) {
       SoundManager.playSound("UI", "error");
       return;
     }
-    if (gameSettings.commentaryFlag) handleCommentary();
+
+    const damage = calculateDamage(attacker, target, gameState.airdropBonus);
+    if (gameSettings.commentaryFlag) handleCommentary(target.type, damage);
 
     SoundManager.playSound(attacker.type.toUpperCase(), "attack");
-    const damage = calculateDamage(attacker, target, gameState.airdropBonus);
 
     setTimeout(() => {
       if (damage > 0) {
@@ -386,7 +393,13 @@ function Game({ gameSettings, setGameSettings }) {
   };
 
   return (
-    <div className="game-container">
+    <div
+      className="game-container"
+      style={{
+        backgroundImage: `url('${gameSettings.locationImagePath}')`,
+        backgroundSize: "cover",
+      }}
+    >
       <Button
         variant="outlined"
         color="error"
@@ -514,14 +527,28 @@ function Game({ gameSettings, setGameSettings }) {
       )}
 
       {gameState.lastAction && (
-        <div className="action-log">
-          <p>
-            {gameState.lastAction.attacker} dealt {gameState.lastAction.damage}{" "}
-            damage to {gameState.lastAction.target}
-          </p>
-        </div>
+        <AlertComponent
+          message={`${gameState.lastAction.attacker} dealt ${gameState.lastAction.damage} damage to ${gameState.lastAction.target}`}
+          severity="warning"
+          onClose={() => {
+            setGameState((prev) => ({
+              ...prev,
+              lastAction: null,
+            }));
+          }}
+        />
       )}
-
+      <div className="timer-container">
+        {countdown ? (
+          <Typography variant="h3" className="timer">
+            {countdown}
+          </Typography>
+        ) : (
+          <Typography variant="h3" className="timer">
+            Time Out!
+          </Typography>
+        )}
+      </div>
       <div className="battlefield">
         <TeamDisplay
           team={gameState.player1Team}

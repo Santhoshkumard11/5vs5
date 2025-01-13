@@ -154,7 +154,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
   return (
     <Grid container sx={{ height: "100vh", overflow: "hidden" }}>
       {/* Player 1 Panel */}
-      <Grid item xs={4} sx={{ padding: 2, borderRight: "1px solid #ddd" }}>
+      <Grid item xs={3} sx={{ padding: 2, borderRight: "1px solid #ddd" }}>
         <Typography variant="h5" textAlign="center" gutterBottom>
           Player 1
         </Typography>
@@ -172,7 +172,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
       </Grid>
 
       {/* Center Panel */}
-      <Grid item xs={4} sx={{ padding: 2 }}>
+      <Grid item xs={6} sx={{ padding: 2 }}>
         <Typography variant="h4" textAlign="center" gutterBottom>
           Choose Your Team - {currentSelection}
         </Typography>
@@ -197,12 +197,13 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
                     <Typography variant="body2">
                       Range: {player.range}
                     </Typography>
-                    {player.healAmount && (
-                      <Typography variant="body2">
-                        Heal: {player.healAmount}
-                      </Typography>
-                    )}
                   </CardContent>
+                  <img
+                    src={player.img.normal}
+                    alt="Gun"
+                    height={256}
+                    width={256}
+                  />
                 </CardActionArea>
               </Card>
             </Grid>
@@ -211,7 +212,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
       </Grid>
 
       {/* Player 2 or CPU Panel */}
-      <Grid item xs={4} sx={{ padding: 2, borderLeft: "1px solid #ddd" }}>
+      <Grid item xs={3} sx={{ padding: 2, borderLeft: "1px solid #ddd" }}>
         <Typography variant="h5" textAlign="center" gutterBottom>
           {gameSettings.opponentType === "CPU" ? "CPU" : "Player 2"}
         </Typography>
@@ -233,7 +234,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
       {gameSettings.opponentType === "CPU" && (
         <Box
           position="fixed"
-          bottom={150}
+          bottom={75}
           left="50%"
           sx={{
             transform: "translateX(-50%)",

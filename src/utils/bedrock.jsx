@@ -79,7 +79,7 @@ async function getCommentaryText(
 
   // Update memory with the current response
   let assistantResponse = await responseBody.content[0].text;
-  updateMemory(currentPrompt, assistantResponse);
+  updateMemory(assistantResponse);
 
   assistantResponse = formatModelResponse(assistantResponse);
 

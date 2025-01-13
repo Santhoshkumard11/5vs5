@@ -1,9 +1,24 @@
 import React from "react";
 import "../styles/TurnIndicator.css";
 
-function TurnIndicator({ currentTurn, selectedSoldier, opponentType }) {
+function TurnIndicator({
+  currentTurn,
+  selectedSoldier,
+  opponentType,
+  progress,
+}) {
   return (
-    <div className={`turn-indicator ${currentTurn}`}>
+    <div
+      className={`turn-indicator ${currentTurn}`}
+      style={{
+        border: "5px solid",
+        borderColor: `hsl(${(progress / 100) * 120}, 100%, 50%)`, // Green to Red transition
+        borderRadius: "10px",
+        padding: "10px",
+        animation: progress > 0 && progress < 100 ? "pulse 1s infinite" : "none", // Optional pulsing effect
+        transition: "border-color 0.5s",
+      }}
+    >
       <div className="turn-content">
         {opponentType === "CPU" ? (
           <h2>

@@ -1,8 +1,9 @@
 .action-log {
+    display:flex;
     background: #f1f8ff;
     border-left: 4px solid #3498db;
     padding: 10px 15px;
-    margin: 10px 0;
+    margin: 15% 0 0 0;
     border-radius: 4px;
     animation: fadeIn 0.3s ease;
 }
@@ -30,7 +31,6 @@
     justify-content: space-between;
     gap: 40px;
     position: relative;
-    margin-top: 10%;
 }
 
 .battlefield::after {

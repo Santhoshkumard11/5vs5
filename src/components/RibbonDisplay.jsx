@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/Ribbon.css";
 import TurnIndicator from "./TurnIndicator";
-import { LinearProgress, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
 const RibbonDisplay = ({ gameState, countdown, progress, opponentType }) => {
   return (
@@ -32,36 +32,21 @@ const RibbonDisplay = ({ gameState, countdown, progress, opponentType }) => {
       </div>
 
       {/* Center Divider */}
-      <div className="center-display">
+      <div>
         <TurnIndicator
           currentTurn={gameState.currentTurn}
           selectedSoldier={gameState.selectedSoldier}
           opponentType={opponentType}
+          progress={progress}
         />
-
-        <div className="timer-container">
-          {countdown ? (
-            <Typography variant="h6" className="timer">
-              Time left: {countdown}s
-            </Typography>
-          ) : (
-            <Typography variant="h6" className="timer">
-              Time left: 0 s
-            </Typography>
-          )}
-
-          <LinearProgress
-            variant="determinate"
-            color="warning"
-            value={progress}
-            className="progress-bar"
-          />
-        </div>
       </div>
 
       {/* Player 2 Section */}
-      <div className="player-section right">
-        <div className="parallelogram player-name-container">
+      <div className="player-section">
+        <div
+          className="parallelogram player-name-container"
+          style={{ alignItems: "flex-end" }}
+        >
           <span className="player-name">{gameState.player2.name}</span>
         </div>
 
@@ -73,7 +58,10 @@ const RibbonDisplay = ({ gameState, countdown, progress, opponentType }) => {
             }}
           ></div>
         </div>
-        <div className="rounds-container right">
+        <div
+          className="rounds-container right"
+          style={{ alignItems: "flex-start" }}
+        >
           {[...Array(3)].map((_, index) => (
             <div
               key={`player2-round-${index}`}

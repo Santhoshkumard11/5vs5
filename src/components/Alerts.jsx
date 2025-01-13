@@ -9,10 +9,10 @@ function AlertComponent({ message, severity = "info", onClose }) {
     const timer = setTimeout(() => {
       setOpen(false);
       if (onClose) onClose();
-    }, 1000);
+    }, 2000);
 
     return () => clearTimeout(timer);
-  }, [onClose]);
+  }, []);
 
   const handleClose = (_, reason) => {
     if (reason === "clickaway") return;

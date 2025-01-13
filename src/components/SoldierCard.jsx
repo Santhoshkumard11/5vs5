@@ -4,14 +4,16 @@ import "../styles/SoldierCard.css";
 function SoldierCard({ soldier, onClick, isSelected }) {
   const healthPercentage = Math.max(0, Math.min(100, soldier.health));
 
+  const soldierImage = isSelected ? soldier.img.fire : soldier.img.normal;
+
   return (
     <div
       className={`soldier-card ${soldier.health <= 0 ? "disabled" : ""} 
                  ${isSelected ? "selected" : ""} ${soldier.owner}`}
       onClick={() => soldier.health > 0 && onClick()}
     >
-      <div className="soldier-icon">{soldier.icon}</div>
       <h3>{soldier.type}</h3>
+      <img src={soldierImage} alt={soldier.type} height={200} width={200} />
       <div className="health-bar">
         <div
           className="health-fill"

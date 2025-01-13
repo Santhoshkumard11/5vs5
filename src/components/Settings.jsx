@@ -32,6 +32,7 @@ const Settings = ({ gameSettings, setGameSettings }) => {
   const [speechPlay, setSpeechPlay] = useState(false);
   const [gameSound, setGameSound] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [pollyCommentary, setPollyCommentary] = useState(false);
   const [soldierNames, setSoldierNames] = useState([
     "Assault Rifle",
     "Shotgun",
@@ -60,6 +61,7 @@ const Settings = ({ gameSettings, setGameSettings }) => {
       ...prevSettings,
       commentaryFlag: commentary,
       volume: volume,
+      pollyCommentary: pollyCommentary,
     }));
     navigate("/");
   };
@@ -234,6 +236,17 @@ const Settings = ({ gameSettings, setGameSettings }) => {
                 />
               }
               label="Enable AI Commentary"
+              sx={{ marginBottom: "20px", color: "#ffffff" }}
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={pollyCommentary}
+                  onChange={(e) => setPollyCommentary(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="Enable AWS Polly Commentary"
               sx={{ marginBottom: "20px", color: "#ffffff" }}
             />
             <FormControlLabel

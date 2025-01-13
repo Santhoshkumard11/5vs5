@@ -10,8 +10,9 @@ import TeamSelection from "./components/ChooseTeam";
 
 function App() {
   const [gameSettings, setGameSettings] = useState({
-    location: "",
-    commentaryFlag: false,
+    locationImagePath: "",
+    commentaryFlag: true,
+    pollyCommentary: false,
     voiceMode: false,
     volume: 0.5,
     difficultyLevel: "Easy",
@@ -44,12 +45,7 @@ function App() {
         />
         <Route
           path="/location"
-          element={
-            <ChooseLocation
-              gameSettings={gameSettings}
-              setGameSettings={setGameSettings}
-            />
-          }
+          element={<ChooseLocation setGameSettings={setGameSettings} />}
         />
         <Route
           path="/team"

@@ -11,7 +11,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
       opponentType: "Player 2",
     });
 
-    navigate("/team");
+    navigate("/location");
   }
 
   function handleAgainstCPU() {
@@ -19,7 +19,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
       ...gameSettings,
       opponentType: "CPU",
     });
-    navigate("/team");
+    navigate("/location");
   }
 
   return (

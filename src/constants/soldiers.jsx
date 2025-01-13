@@ -6,6 +6,10 @@ export const SOLDIER_TYPES = {
     range: 3,
     health: 100,
     icon: "🔫",
+    img: {
+      normal: "./img/assault-rifle.png",
+      fire: "./img/assault-rifle-fire.png",
+    },
   },
   SNIPER: {
     type: "Sniper",
@@ -14,6 +18,10 @@ export const SOLDIER_TYPES = {
     range: 5,
     health: 80,
     icon: "🎯",
+    img: {
+      normal: "./img/sniper.png",
+      fire: "./img/sniper-fire.png",
+    },
   },
   MEDIC: {
     type: "Medic",
@@ -23,6 +31,10 @@ export const SOLDIER_TYPES = {
     health: 90,
     healAmount: 30,
     icon: "⚕️",
+    img: {
+      normal: "./img/medic.png",
+      fire: "./img/medic-fire.png",
+    },
   },
   MACHINE_GUN: {
     type: "Machine Gun",
@@ -31,6 +43,10 @@ export const SOLDIER_TYPES = {
     range: 4,
     health: 100,
     icon: "🔫",
+    img: {
+      normal: "./img/machine-gun.png",
+      fire: "./img/machine-gun-fire.png",
+    },
   },
   SHOTGUN: {
     type: "Shotgun",
@@ -39,5 +55,9 @@ export const SOLDIER_TYPES = {
     range: 1,
     health: 100,
     icon: "💥",
+    img: {
+      normal: "./img/shotgun.png",
+      fire: "./img/shotgun-fire.png",
+    },
   },
 };

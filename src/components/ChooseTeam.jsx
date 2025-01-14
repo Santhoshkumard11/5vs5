@@ -199,7 +199,14 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
           color="primary"
           onClick={handleReady}
           disabled={player1Selection.length !== 3 || isPlayer1Ready}
-          sx={{ mt: 2, width: "25%" }}
+          sx={{
+            mt: 2,
+            width: "25%",
+            color: "#ffffff",
+            background: "linear-gradient(135deg, #26355D, #AF47D2)",
+            fontWeight: "bold",
+            borderRadius: "10px",
+          }}
           left="50%"
         >
           {isPlayer1Ready ? "Ready!" : "Ready"}
@@ -278,7 +285,14 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
             color="primary"
             onClick={handleReady}
             disabled={player2Selection.length !== 3 || isPlayer2Ready}
-            sx={{ mt: 2, width: "25%" }}
+            sx={{
+              mt: 2,
+              width: "25%",
+              color: "#ffffff",
+              background: "linear-gradient(135deg, #26355D, #AF47D2)",
+              fontWeight: "bold",
+              borderRadius: "10px",
+            }}
           >
             {isPlayer2Ready ? "Ready!" : "Ready"}
           </Button>
@@ -331,13 +345,18 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
       >
         <Button
           variant="contained"
-          color="primary"
           disabled={
             !isPlayer1Ready ||
             (gameSettings.opponentType !== "CPU" && !isPlayer2Ready)
           }
           onClick={handleStartGame}
           onMouseEnter={() => playAudio(buttonHoverSound)}
+          sx={{
+            color: "#ffffff",
+            background: "linear-gradient(135deg, #26355D, #AF47D2)",
+            fontWeight: "bold",
+            borderRadius: "10px",
+          }}
         >
           Let's Fight!
         </Button>

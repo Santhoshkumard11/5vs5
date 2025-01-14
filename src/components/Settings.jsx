@@ -23,6 +23,7 @@ import {
   VolumeDown,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import FightingGameBackground from "./GameBackground";
 
 const Settings = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ const Settings = ({ gameSettings, setGameSettings }) => {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        background: "linear-gradient(135deg, #1e88e5, #1565c0)",
+        background: "linear-gradient(135deg, #26355D, #AF47D2)",
         color: "#ffffff",
         padding: "20px",
       }}
@@ -92,6 +93,7 @@ const Settings = ({ gameSettings, setGameSettings }) => {
           color: "#ffffff",
           textTransform: "uppercase",
           fontWeight: "bold",
+          background: "linear-gradient(135deg, #26355D, #AF47D2)",
         }}
       >
         Back to Main Menu
@@ -172,7 +174,16 @@ const Settings = ({ gameSettings, setGameSettings }) => {
         </Grid2>
 
         {/* Right Column */}
-        <Grid2 item xs={12} md={6} alignItems={"start"}>
+        <Grid2
+          item
+          xs={12}
+          md={6}
+          alignItems={"start"}
+          marginLeft={10}
+          alignContent={"flex-start"}
+          display={"flex"}
+          flexDirection={"column"}
+        >
           {/* Volume Control */}
           <Stack
             spacing={2}
@@ -194,8 +205,8 @@ const Settings = ({ gameSettings, setGameSettings }) => {
           </Stack>
 
           {/* Bullet Color */}
-          <Box marginTop={3} alignContent={"start"}>
-            <Typography variant="h5" sx={{ marginBottom: "10px" }}>
+          <Box marginTop={1} alignContent={"start"}>
+            <Typography variant="h5" sx={{ marginBottom: "5px" }}>
               Bullet Color
             </Typography>
             <Select
@@ -205,7 +216,7 @@ const Settings = ({ gameSettings, setGameSettings }) => {
                 backgroundColor: "#ffffff",
                 width: "150px",
                 borderRadius: "8px",
-                marginBottom: "20px",
+                marginBottom: "10px",
               }}
             >
               <MenuItem value="#ff0000">Red</MenuItem>
@@ -215,13 +226,19 @@ const Settings = ({ gameSettings, setGameSettings }) => {
           </Box>
 
           {/* Toggles */}
-          <Box marginTop={3}>
+          <Box
+            marginTop={3}
+            alignContent={"left"}
+            display={"flex"}
+            flexDirection={"column"}
+          >
             <FormControlLabel
               control={
                 <Switch
                   checked={gameSound}
                   onChange={(e) => setGameSound(e.target.checked)}
                   color="primary"
+                  disabled="true"
                 />
               }
               label="Enable Human Game Sound"
@@ -263,7 +280,6 @@ const Settings = ({ gameSettings, setGameSettings }) => {
           </Box>
         </Grid2>
       </Grid2>
-
       {/* Show Controls */}
       <Button
         variant="contained"
@@ -273,7 +289,6 @@ const Settings = ({ gameSettings, setGameSettings }) => {
       >
         Show Controls
       </Button>
-
       {/* Modal for Controls */}
       <Modal open={modalOpen} onClose={handleCloseModal}>
         <Box

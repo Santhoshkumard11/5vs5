@@ -23,6 +23,7 @@ import {
   buttonClickBack,
   buttonClickSound,
   buttonHoverSound,
+  gameLevelSound,
   levelMoveTimeout,
 } from "../constants/game";
 import { PlayersStats } from "./Stats";
@@ -85,7 +86,7 @@ function Game({ gameSettings, setGameSettings }) {
     (voice) => voice.name.includes("Daniel") && voice.lang === "en-GB"
   )[0];
 
-  const initializeGame = useCallback(() => {
+  const initializeGame = () => {
     const player1Team = createTeam("player1", gameSettings.player1Selection);
     const player2Team = createTeam("player2", gameSettings.player2Selection);
     setGameState({
@@ -102,7 +103,7 @@ function Game({ gameSettings, setGameSettings }) {
     });
     setCountdown(null);
     setProgress(100);
-  });
+  };
 
   const handleTextToSpeech = (text, character = "female") => {
     if (!window.speechSynthesis) {
@@ -128,6 +129,7 @@ function Game({ gameSettings, setGameSettings }) {
       ...prev,
       currentRound: prev.currentRound + 1,
     }));
+    playAudio(gameLevelSound[gameState.currentRound+1]);
   };
 
   const executeCPUTurn = () => {
@@ -139,7 +141,6 @@ function Game({ gameSettings, setGameSettings }) {
 
   useEffect(() => {
     initializeGame();
-    handleTextToSpeech("The game starts now!");
   }, []);
 
   useEffect(() => {
@@ -419,6 +420,7 @@ function Game({ gameSettings, setGameSettings }) {
           bottom: "10px",
           left: "47%",
           zIndex: "1000",
+          background: "linear-gradient(90deg, #26355D, #AF47D2)",
         }}
       >
         Quit Game
@@ -511,6 +513,10 @@ function Game({ gameSettings, setGameSettings }) {
               {gameState.finalWinner === "player1" ? "Player 1" : "Player 2"}{" "}
               emerges victorious!
             </Typography>
+            <Typography>
+              Take a screenshot of this page and share with your friends!
+            </Typography>
+            <Typography>#sandyinspires</Typography>
             <Box
               sx={{
                 display: "flex",

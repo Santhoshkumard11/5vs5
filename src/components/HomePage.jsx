@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
 import { playAudio } from "../utils/gameLogic";
 import { buttonClickSound, buttonHoverSound } from "../constants/game";
+import FightingGameBackground from "./GameBackground";
 
 const HomePage = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
@@ -43,13 +44,13 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #08D9D6, #FFFFFF)",
         color: "#252A34",
         textAlign: "center",
         padding: "20px",
         gap: 4,
       }}
     >
+      <FightingGameBackground />
       <Typography
         variant="h2"
         component="h1"

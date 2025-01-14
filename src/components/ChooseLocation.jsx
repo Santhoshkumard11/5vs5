@@ -17,6 +17,8 @@ import {
   locationMoveSound,
 } from "../constants/game";
 
+import FightingGameBackground from "./GameBackground";
+
 const locations = [
   { name: "Japan", image: "img/japan.jpg" },
   {
@@ -77,11 +79,11 @@ const ChooseLocation = ({ setGameSettings }) => {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        background: "linear-gradient(135deg, #08D9D6, #FFFFFF)",
         color: "#000000",
         padding: "20px",
       }}
     >
+      <FightingGameBackground />
       {/* Back to Main Menu Button */}
       <Button
         variant="contained"
@@ -91,13 +93,10 @@ const ChooseLocation = ({ setGameSettings }) => {
           position: "absolute",
           top: "20px",
           left: "20px",
-          border: "2px solid #FF8F00",
-          borderRadius: "10px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          color: "#000000",
-          textTransform: "uppercase",
+          border: "2px solid rgb(0, 0, 0)",
+          color: "#ffffff",
           fontWeight: "bold",
+          background: "linear-gradient(135deg, #26355D, #AF47D2)",
         }}
       >
         Back to Main Menu
@@ -213,10 +212,7 @@ const ChooseLocation = ({ setGameSettings }) => {
           fontWeight: "bold",
           borderRadius: "10px",
           color: "#ffffff",
-          backgroundColor: "#26355D",
-          "&:hover": {
-            backgroundColor: "#EAEAEA",
-          },
+          background: "linear-gradient(135deg, #26355D, #AF47D2)",
         }}
       >
         Continue

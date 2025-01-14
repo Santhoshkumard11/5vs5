@@ -20,6 +20,7 @@ function App() {
     player1Selection: [],
     player2Selection: [],
     gameSoundMode: "human",
+    playerInfo: "",
   });
 
   return (

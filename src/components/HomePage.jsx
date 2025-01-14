@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -13,32 +13,52 @@ import {
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import FightingGameBackground from "./GameBackground";
-import { countryList } from "../constants/game";
+import {
+  buttonClickSound,
+  buttonHoverSound,
+  countryList,
+} from "../constants/game";
+import { playAudio } from "../utils/gameLogic";
 
 const HomePage = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
-  const [openModal, setOpenModal] = useState(true); // Modal open state
+  const [openModal, setOpenModal] = useState(false); // Modal open state
   const [playerInfo, setPlayerInfo] = useState({
     name: "",
     country: "",
     gender: "",
+    id: "",
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setPlayerInfo((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleCountryChange = (event, value) => {
-    setPlayerInfo((prev) => ({ ...prev, country: value }));
-  };
-
-  const handleModalSubmit = () => {
-    if (!playerInfo.name || !playerInfo.country || !playerInfo.gender) {
-      alert("Please fill in all fields.");
-      return;
+  // Check local storage on mount
+  useEffect(() => {
+    const storedPlayerInfo = JSON.parse(localStorage.getItem("playerInfo"));
+    if (storedPlayerInfo) {
+      setPlayerInfo(storedPlayerInfo);
+    } else {
+      setOpenModal(true); // Open modal if no player info is found
     }
+  }, []);
+
+  const handleInputChange = (field, value) => {
+    setPlayerInfo((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  // Save player info to local storage and close modal
+  const handleSavePlayerInfo = () => {
+    const newPlayerInfo = {
+      ...playerInfo,
+      id: Date.now().toString(),
+    };
+    localStorage.setItem("playerInfo", JSON.stringify(newPlayerInfo));
     setOpenModal(false);
+    setGameSettings((prevSettings) => ({
+      ...prevSettings,
+      playerInfo: newPlayerInfo,
+    }));
   };
 
   const countryOptions = countryList.map((country) => ({
@@ -49,11 +69,13 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
 
   const handleAgainstPlayer2 = () => {
     setGameSettings({ ...gameSettings, opponentType: "Player 2", playerInfo });
+    playAudio(buttonClickSound);
     navigate("/location");
   };
 
   const handleAgainstCPU = () => {
     setGameSettings({ ...gameSettings, opponentType: "CPU", playerInfo });
+    playAudio(buttonClickSound);
     navigate("/location");
   };
 
@@ -85,7 +107,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
               name="name"
               label="Name"
               value={playerInfo.name}
-              onChange={handleInputChange}
+              onChange={(e) => handleInputChange("name", e.target.value)}
               fullWidth
             />
             <Autocomplete
@@ -114,7 +136,9 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
                 <TextField {...params} label="Country" />
               )}
               value={playerInfo.country.label}
-              onChange={handleCountryChange}
+              onChange={(event, newValue) =>
+                handleInputChange("country", newValue)
+              }
               isOptionEqualToValue={(option, value) =>
                 option.label === value.label
               } // Ensure comparison is based on label
@@ -126,7 +150,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
             <RadioGroup
               name="gender"
               value={playerInfo.gender}
-              onChange={handleInputChange}
+              onChange={(e) => handleInputChange("gender", e.target.value)}
               row
             >
               <FormControlLabel value="Male" control={<Radio />} label="Male" />
@@ -143,7 +167,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
             </RadioGroup>
             <Button
               variant="contained"
-              onClick={handleModalSubmit}
+              onClick={handleSavePlayerInfo}
               sx={{
                 mt: 3,
                 backgroundColor: "#08D9D6",
@@ -187,7 +211,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
           <Typography
             variant="subtitle1"
             sx={{
-              fontSize: "20px",
+              fontSize: "25px",
               fontWeight: 500,
               color: "#26355D",
               marginBottom: "30px",
@@ -208,7 +232,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
               flexDirection: "column",
               gap: 3,
               width: "100%",
-              maxWidth: "350px",
+              maxWidth: "250px",
             }}
           >
             <Button
@@ -218,6 +242,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
                 "&:hover": { backgroundColor: "#06B6B3" },
               }}
               onClick={handleAgainstCPU}
+              onMouseEnter={() => playAudio(buttonHoverSound)}
             >
               Play vs CPU
             </Button>
@@ -228,8 +253,30 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
                 "&:hover": { backgroundColor: "#D92655" },
               }}
               onClick={handleAgainstPlayer2}
+              onMouseEnter={() => playAudio(buttonHoverSound)}
             >
               Play vs Human
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#FF2E63",
+                "&:hover": { backgroundColor: "#D92655" },
+              }}
+              disabled
+            >
+              Play Online
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#FF2E63",
+                "&:hover": { backgroundColor: "#D92655" },
+              }}
+              onMouseEnter={() => playAudio(buttonHoverSound)}
+              disabled
+            >
+              Leaderboard (oneline)
             </Button>
             <Button
               variant="outlined"
@@ -238,7 +285,11 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
                 color: "#AF47D2",
                 "&:hover": { borderColor: "#9436B8", color: "#9436B8" },
               }}
-              onClick={() => navigate("/settings")}
+              onClick={() => {
+                playAudio(buttonClickSound);
+                navigate("/settings");
+              }}
+              onMouseEnter={() => playAudio(buttonHoverSound)}
             >
               Settings
             </Button>
@@ -249,7 +300,11 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
                 color: "#FF8F00",
                 "&:hover": { borderColor: "#E07C00", color: "#E07C00" },
               }}
-              onClick={() => navigate("/help")}
+              onClick={() => {
+                playAudio(buttonClickSound);
+                navigate("/help");
+              }}
+              onMouseEnter={() => playAudio(buttonHoverSound)}
             >
               Help
             </Button>

@@ -3,13 +3,13 @@ import "../styles/Ribbon.css";
 import TurnIndicator from "./TurnIndicator";
 import { Typography } from "@mui/material";
 
-const RibbonDisplay = ({ gameState, countdown, progress, opponentType }) => {
+const RibbonDisplay = ({ gameState, player1Name, progress, opponentType }) => {
   return (
     <div className="top-ribbon">
       {/* Player 1 Section */}
       <div className="player-section left">
         <div className="parallelogram player-name-container">
-          <span className="player-name">{gameState.player1.name}</span>
+          <span className="player-name">{player1Name}</span>
         </div>
         <div className="team-health-parallelogram">
           <div

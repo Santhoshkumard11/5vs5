@@ -191,7 +191,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
         }}
       >
         <Typography variant="h5" textAlign="center" gutterBottom>
-          Player 1
+          {gameSettings.playerInfo.name}
         </Typography>
         {renderTeam(player1Selection)}
         <Button
@@ -222,7 +222,10 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
         }}
       >
         <Typography variant="h4" textAlign="center" gutterBottom>
-          Choose Your Team - {currentSelection}
+          Choose Your Team -{" "}
+          {currentSelection === "Player 1"
+            ? gameSettings.playerInfo.name
+            : currentSelection}
         </Typography>
         <Grid container spacing={2}>
           {players.map((player) => (

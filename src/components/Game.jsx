@@ -428,7 +428,7 @@ function Game({ gameSettings, setGameSettings }) {
       <div className="game-header">
         <RibbonDisplay
           gameState={gameState}
-          countdown={countdown}
+          player1Name={gameSettings.playerInfo.name}
           progress={progress}
           opponentType={gameSettings.opponentType}
         />
@@ -468,7 +468,9 @@ function Game({ gameSettings, setGameSettings }) {
               align="center"
               sx={{ mb: 3, color: "text.secondary" }}
             >
-              {gameState.winningPlayer === "player1" ? "Player 1" : "Player 2"}{" "}
+              {gameState.winningPlayer === "player1"
+                ? gameSettings.playerInfo.name
+                : "Player 2"}{" "}
               wins this round!
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -510,7 +512,9 @@ function Game({ gameSettings, setGameSettings }) {
               🎯 Game Over 🎯
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, color: "text.secondary" }}>
-              {gameState.finalWinner === "player1" ? "Player 1" : "Player 2"}{" "}
+              {gameState.finalWinner === "player1"
+                ? gameSettings.playerInfo.name
+                : "Player 2"}{" "}
               emerges victorious!
             </Typography>
             <Typography>

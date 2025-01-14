@@ -62,7 +62,7 @@ const BattlefieldBackground = () => {
         `}
       </style>
 
-      {[...Array(3)].map((_, i) => (
+      {[...Array(10)].map((_, i) => (
         <Box
           key={i}
           component="img"

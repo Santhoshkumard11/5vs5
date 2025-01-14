@@ -29,6 +29,7 @@ const Settings = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
   const [volume, setVolume] = useState(0.5);
   const [bulletColor, setBulletColor] = useState("#ff0000");
+  const [language, setLanguage] = useState("English");
   const [commentary, setCommentary] = useState(true);
   const [speechPlay, setSpeechPlay] = useState(false);
   const [gameSound, setGameSound] = useState(false);
@@ -222,6 +223,28 @@ const Settings = ({ gameSettings, setGameSettings }) => {
               <MenuItem value="#ff0000">Red</MenuItem>
               <MenuItem value="#00ff00">Green</MenuItem>
               <MenuItem value="#0000ff">Blue</MenuItem>
+            </Select>
+          </Box>
+
+          {/* Language Selection */}
+          <Box marginTop={1} alignContent={"start"}>
+            <Typography variant="h5" sx={{ marginBottom: "5px" }}>
+              Language
+            </Typography>
+            <Select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              sx={{
+                backgroundColor: "#ffffff",
+                width: "150px",
+                borderRadius: "8px",
+                marginBottom: "10px",
+              }}
+            >
+              <MenuItem value="English">🇺🇸 English</MenuItem>
+              <MenuItem value="Spanish">🇪🇸 Spanish</MenuItem>
+              <MenuItem value="French">🇫🇷 French</MenuItem>
+              <MenuItem value="German">🇩🇪 German</MenuItem>
             </Select>
           </Box>
 

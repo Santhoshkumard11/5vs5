@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { SoundManager } from "../utils/soundEffects";
 import "../styles/SoundControl.css";
+import SpeechRecognitionComponent from "./SpeechRecognition";
 
-function SoundControl() {
+function SoundControl({ handleAction, gameState }) {
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(0.5);
 
@@ -39,21 +40,29 @@ function SoundControl() {
 
   return (
     <div className="sound-control">
-      <button
-        className={`mute-button ${isMuted ? "muted" : ""}`}
-        onClick={handleMuteToggle}
-      >
-        {isMuted ? "🔇" : "🔊"}
-      </button>
-      <input
-        type="range"
-        min="0"
-        max="1"
-        step="0.1"
-        value={volume}
-        onChange={handleVolumeChange}
-        className="volume-slider"
-      />
+      <div>
+        <button
+          className={`mute-button ${isMuted ? "muted" : ""}`}
+          onClick={handleMuteToggle}
+        >
+          {isMuted ? "🔇" : "🔊"}
+        </button>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          value={volume}
+          onChange={handleVolumeChange}
+          className="volume-slider"
+        />
+      </div>
+      {gameState.player2.name === "CPU" && (
+        <SpeechRecognitionComponent
+          handleAction={handleAction}
+          gameState={gameState}
+        />
+      )}
     </div>
   );
 }

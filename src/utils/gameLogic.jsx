@@ -1,3 +1,5 @@
+import { SOLDIER_TYPES } from "../constants/soldiers";
+
 export const createTeam = (owner, teamList) => {
   return Object.entries(teamList).map(([key, data]) => ({
     ...data,
@@ -75,4 +77,33 @@ export function sendAudioTextToPythonServer(latestCommentaryText) {
     .then((response) => response.text())
     .then((result) => console.log(result))
     .catch((error) => console.error(error));
+}
+
+function formatTranscript(transcript) {
+  // Ensure valid input
+  if (!transcript || typeof transcript !== "string") {
+    return [null, null];
+  }
+  // split the words and check for soldier types
+  transcript = transcript.toLowerCase().trim();
+  const [attacker, target] = transcript.split("attack");
+  const soldierTypes = Object.values(SOLDIER_TYPES);
+  const attackerType = soldierTypes.find((s) =>
+    attacker.trim().includes(s.type.toLowerCase())
+  );
+  const targetType = soldierTypes.find((s) =>
+    target.trim().includes(s.type.toLowerCase())
+  );
+  return [attackerType, targetType];
+}
+
+export function handleVoiceCommands(transcript, handleAction, gameState) {
+  const [attackerType, targetType] = formatTranscript(transcript);
+
+  const attacker = gameState.player1Team.find(
+    (s) => s.type === attackerType.type
+  );
+  const target = gameState.player2Team.find((s) => s.type === targetType.type);
+  
+  handleAction(attacker, target);
 }

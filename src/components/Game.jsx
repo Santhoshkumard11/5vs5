@@ -50,7 +50,7 @@ function Game({ gameSettings, setGameSettings }) {
       teamHealth: 100, // Percentage health remaining
     },
     player2: {
-      name: "Player 2",
+      name: gameSettings.opponentType,
       teamHealth: 100, // Percentage health remaining
     },
   });
@@ -420,7 +420,7 @@ function Game({ gameSettings, setGameSettings }) {
           progress={progress}
           opponentType={gameSettings.opponentType}
         />
-        <SoundControl />
+        <SoundControl handleAction={handleAction} gameState={gameState} />
       </div>
 
       <PlayersStats gameState={gameState} />

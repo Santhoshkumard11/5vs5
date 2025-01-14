@@ -128,8 +128,16 @@ function Game({ gameSettings, setGameSettings }) {
     setGameState((prev) => ({
       ...prev,
       currentRound: prev.currentRound + 1,
+      player1: {
+        ...prev.player1,
+        teamHealth: 100,
+      },
+      player2: {
+        ...prev.player2,
+        teamHealth: 100,
+      },
     }));
-    playAudio(gameLevelSound[gameState.currentRound+1]);
+    playAudio(gameLevelSound[gameState.currentRound + 1]);
   };
 
   const executeCPUTurn = () => {
@@ -180,6 +188,13 @@ function Game({ gameSettings, setGameSettings }) {
       return () => clearInterval(playerMoveInterval);
     }
   }, [gameState.currentTurn, gameState.gameOver]);
+
+  const triggerAirdropChance = () => {
+    if (Math.random() / 3 === 0) {
+      SoundManager.playSound("UI", "airdrop");
+      setGameState((prev) => ({ ...prev, airdropActive: true }));
+    }
+  };
 
   const handleSoldierSelect = (soldier) => {
     SoundManager.playSound("UI", "select");
@@ -301,6 +316,11 @@ function Game({ gameSettings, setGameSettings }) {
       damage
     );
     checkGameState(updatePlayer1Team, updatePlayer2Team);
+    updateTeamHealthBar(updatePlayer1Team, updatePlayer2Team);
+    triggerAirdropChance();
+  };
+
+  const updateTeamHealthBar = (updatePlayer1Team, updatePlayer2Team) => {
     setGameState((prev) => ({
       ...prev,
       player1: {
@@ -612,6 +632,11 @@ function Game({ gameSettings, setGameSettings }) {
       {gameState.airdropActive && (
         <AirdropModal
           onAnswer={(correct) => {
+            if (correct) {
+              SoundManager.playSound("UI", "airdrop_correct_answer");
+            } else {
+              SoundManager.playSound("UI", "airdrop_wrong_answer");
+            }
             setGameState((prev) => ({
               ...prev,
               airdropActive: false,

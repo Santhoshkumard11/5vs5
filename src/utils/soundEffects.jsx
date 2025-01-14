@@ -53,13 +53,17 @@ const SoundEffects = {
     select: new SoundEffect("/sounds/soldier-select.wav"),
     hit_miss: new SoundEffect("/sounds/hit-miss.wav"),
     error: new SoundEffect("/sounds/error.wav"),
-    victory: new SoundEffect("/sounds/you_win.ogg"),
-    defeat: new SoundEffect("/sounds/you_lose.ogg"),
-    airdrop: new SoundEffect("/sounds/airdrop.ogg"),
-    player_1: new SoundEffect("/sounds/player_1.ogg"),
-    player_2: new SoundEffect("/sounds/player_2.ogg"),
-    begin: new SoundEffect("/sounds/begin.ogg"),
-    prepareYourself: new SoundEffect("/sounds/prepare_yourself.ogg"),
+    victory: new SoundEffect("/sounds/you_win.wav"),
+    defeat: new SoundEffect("/sounds/you_lose.wav"),
+    airdrop: new SoundEffect("/sounds/airdrop.wav"),
+    airdrop_correct_answer: new SoundEffect(
+      "/sounds/airdrop_correct_answer.wav"
+    ),
+    airdrop_wrong_answer: new SoundEffect("/sounds/airdrop_wrong_answer.wav"),
+    player_1: new SoundEffect("/sounds/player_1.wav"),
+    player_2: new SoundEffect("/sounds/player_2.wav"),
+    begin: new SoundEffect("/sounds/begin.wav"),
+    prepareYourself: new SoundEffect("/sounds/prepare_yourself.wav"),
   },
 };
 

@@ -23,7 +23,7 @@
 /* Parallelogram shape for player names */
 .parallelogram {
     position: relative;
-    background: #E1FDF4;
+    background: #FFDB00;
     transform: skew(-20deg);
     padding: 10px 20px;
     margin-bottom: 10px;
@@ -68,12 +68,12 @@
 .round-shape {
     width: 30px;
     height: 20px;
-    background: #555;
+    background: #FF8F00;
     transform: skew(-20deg);
 }
 
 .round-shape.won {
-    background: #7d4545;
+    background: #08D9D6;
 }
 
 /* Parallelogram health bar container */
@@ -101,7 +101,7 @@
 /* Health fill for parallelogram */
 .health-fill-parallelogram {
     height: 100%;
-    background: linear-gradient(90deg, #E1FDF4, #82A096);
+    background: linear-gradient(90deg, #26355D, #AF47D2);
     transform: skew(20deg);
     transition: width 0.3s ease-in-out;
 }

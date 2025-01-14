@@ -1,11 +1,23 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
+import { playAudio } from "../utils/gameLogic";
+import { buttonClickSound, buttonHoverSound } from "../constants/game";
 
 const HomePage = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
 
+  function playHoverSound() {
+    try {
+      buttonHoverSound.currentTime = 0; // Reset sound to the start
+      buttonHoverSound.play();
+    } catch (error) {
+      console.error("Error playing sound:", error);
+    }
+  }
+
   function handleAgainstPlayer2() {
+    playAudio(buttonClickSound);
     setGameSettings({
       ...gameSettings,
       opponentType: "Player 2",
@@ -15,6 +27,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
   }
 
   function handleAgainstCPU() {
+    playAudio(buttonClickSound);
     setGameSettings({
       ...gameSettings,
       opponentType: "CPU",
@@ -30,9 +43,11 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #1e88e5, #1565c0)",
-        color: "#ffffff",
+        background: "linear-gradient(135deg, #08D9D6, #FFFFFF)",
+        color: "#252A34",
         textAlign: "center",
+        padding: "20px",
+        gap: 4,
       }}
     >
       <Typography
@@ -40,78 +55,122 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
         component="h1"
         sx={{
           fontWeight: "bold",
-          marginBottom: "30px",
+          marginBottom: "10px",
+          color: "#fffff",
           textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
         }}
       >
         Dishum Dishum - 3 Vs 3
       </Typography>
+      <Typography
+        variant="subtitle1"
+        sx={{
+          fontSize: "20px",
+          fontWeight: 500,
+          color: "#26355D",
+          marginBottom: "30px",
+        }}
+      >
+        Choose your team and enter the battlefield!
+      </Typography>
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: 2,
+          gap: 3,
           width: "100%",
-          maxWidth: "400px",
+          maxWidth: "350px",
         }}
       >
         <Button
           variant="contained"
-          color="primary"
           sx={{
-            padding: "12px 20px",
-            fontSize: "18px",
+            backgroundColor: "#08D9D6",
+            color: "#EAEAEA",
+            padding: "14px 20px",
+            fontSize: "16px",
             textTransform: "uppercase",
             fontWeight: "bold",
-            borderRadius: "30px",
+            borderRadius: "10px",
+            transition: "transform 0.2s, background-color 0.3s",
+            "&:hover": {
+              backgroundColor: "#06B6B3",
+              transform: "scale(1.05)",
+            },
           }}
           onClick={handleAgainstCPU}
+          onMouseEnter={playHoverSound}
         >
           Play vs CPU
         </Button>
         <Button
           variant="contained"
-          color="secondary"
           sx={{
-            padding: "12px 20px",
-            fontSize: "18px",
+            backgroundColor: "#FF2E63",
+            color: "#FFFFFF",
+            padding: "14px 20px",
+            fontSize: "16px",
             textTransform: "uppercase",
             fontWeight: "bold",
-            borderRadius: "30px",
+            borderRadius: "10px",
+            transition: "transform 0.2s, background-color 0.3s",
+            "&:hover": {
+              backgroundColor: "#D92655",
+              transform: "scale(1.05)",
+            },
           }}
           onClick={handleAgainstPlayer2}
+          onMouseEnter={playHoverSound}
         >
           Play vs Human
         </Button>
         <Button
           variant="outlined"
-          color="inherit"
           sx={{
-            padding: "12px 20px",
-            fontSize: "18px",
+            padding: "14px 20px",
+            fontSize: "16px",
             textTransform: "uppercase",
             fontWeight: "bold",
-            borderRadius: "30px",
-            border: "2px solid #ffffff",
-            color: "#ffffff",
+            borderRadius: "10px",
+            border: "2px solid #AF47D2",
+            color: "#AF47D2",
+            transition: "transform 0.2s, border-color 0.3s, color 0.3s",
+            "&:hover": {
+              borderColor: "#9436B8",
+              color: "#9436B8",
+              transform: "scale(1.05)",
+            },
           }}
-          onClick={() => navigate("/settings")}
+          onClick={() => {
+            playAudio(buttonClickSound);
+            navigate("/settings");
+          }}
+          onMouseEnter={playHoverSound}
         >
           Settings
         </Button>
         <Button
           variant="outlined"
-          color="inherit"
           sx={{
-            padding: "12px 20px",
-            fontSize: "18px",
+            padding: "14px 20px",
+            fontSize: "16px",
             textTransform: "uppercase",
             fontWeight: "bold",
-            borderRadius: "30px",
-            color: "#ffffff",
-            textDecoration: "underline",
+            borderRadius: "10px",
+            border: "2px solid #FF8F00",
+            color: "#FF8F00",
+            transition: "transform 0.2s, border-color 0.3s, color 0.3s",
+            "&:hover": {
+              borderColor: "#E07C00",
+              color: "#E07C00",
+              transform: "scale(1.05)",
+            },
           }}
-          onClick={() => navigate("/help")}
+          onClick={() => {
+            playAudio(buttonClickSound);
+            navigate("/help");
+          }}
+          onMouseEnter={playHoverSound}
         >
           Help
         </Button>

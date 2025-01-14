@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SoundManager } from "../utils/soundEffects";
 import "../styles/SoundControl.css";
-import SpeechRecognitionComponent from "./SpeechRecognition";
 
 function SoundControl({ handleAction, gameState }) {
   const [isMuted, setIsMuted] = useState(false);
@@ -57,12 +56,6 @@ function SoundControl({ handleAction, gameState }) {
           className="volume-slider"
         />
       </div>
-      {gameState.player2.name === "CPU" && (
-        <SpeechRecognitionComponent
-          handleAction={handleAction}
-          gameState={gameState}
-        />
-      )}
     </div>
   );
 }

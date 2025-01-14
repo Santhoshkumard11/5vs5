@@ -11,3 +11,12 @@ export const levelMoveTimeout = {
   Hard: 7000, // 7 seconds for Hard
   Insane: 5000, // 5 seconds for Insane
 };
+
+
+export const buttonHoverSound = new Audio("./sounds/button-hover.wav");
+export const buttonClickBack = new Audio("./sounds/button-click-back.wav");
+export const buttonClickSound = new Audio("./sounds/button-click.wav");
+export const buttonClickFight = new Audio("./sounds/button-click-fight.wav");
+export const soldierSelectSound = new Audio("./sounds/soldier-select.wav");
+
+export const locationMoveSound = new Audio("./sounds/location-move.wav");

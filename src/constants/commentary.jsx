@@ -10,13 +10,12 @@ Below are the current status of the game,
 <player2> has made <p2SuccessfulHits> hits and <p2HitMiss> misses.
 <player2> has an health status of <p2t1Name> with <p2t1health>, <p2t2Name> with <p2t2health>, <p2t3Name> with <p2t3health>.
 
-Current move, <currentPlayerName> with <currentPlayerTeamMember> hits <oppositePlayerName> <opponentTeamMember> and caused <currentDamage> damage with <currentPlayerTimeLeft> seconds time left.
+Current move, <currentPlayerName> with <currentPlayerTeamMember> hits <oppositePlayerName> <opponentTeamMember> and caused <currentDamage> damage.
 
 Current round status, current round is <currentRound>, <player1> has won <p1RoundWins>, <player2> has won <p2RoundWins>.
 
 The commentary text should be natural, funny and easy to understand. Male voice wil be played before female.
 This commentary text is for an action game. if the Damage is 0, it is a miss.
-Introduce comparisons from previous moves, compare successful hits, how long the player can hold, who will win, and any more.. add new things each time.
 
 OUTPUT should be just the JSON object and no additional text.
 

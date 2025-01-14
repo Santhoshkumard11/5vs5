@@ -50,9 +50,9 @@ const SoundEffects = {
     death: new SoundEffect("/sounds/soldier-death.wav"),
   },
   UI: {
-    select: new SoundEffect("/sounds/select.wav"),
+    select: new SoundEffect("/sounds/soldier-select.wav"),
     hit_miss: new SoundEffect("/sounds/hit-miss.wav"),
-    error: new SoundEffect("/sounds/error.ogg"),
+    error: new SoundEffect("/sounds/error.wav"),
     victory: new SoundEffect("/sounds/you_win.ogg"),
     defeat: new SoundEffect("/sounds/you_lose.ogg"),
     airdrop: new SoundEffect("/sounds/airdrop.ogg"),

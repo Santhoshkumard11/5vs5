@@ -12,7 +12,16 @@ import {
 } from "@mui/material";
 import { ArrowUpward, ArrowDownward, Delete } from "@mui/icons-material";
 import { SOLDIER_TYPES } from "../constants/soldiers";
-import { levelColors } from "../constants/game";
+import {
+  buttonClickBack,
+  buttonClickFight,
+  buttonClickSound,
+  buttonHoverSound,
+  levelColors,
+  locationMoveSound,
+  soldierSelectSound,
+} from "../constants/game";
+import { playAudio } from "../utils/gameLogic";
 
 const TeamSelection = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
@@ -85,6 +94,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
   };
 
   const handleReady = () => {
+    playAudio(buttonClickSound);
     if (currentSelection === "Player 1") {
       setIsPlayer1Ready(true);
 
@@ -101,6 +111,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
   };
 
   const handleStartGame = () => {
+    playAudio(buttonClickFight);
     setGameSettings({
       ...gameSettings,
       player1Selection: player1Selection,
@@ -131,18 +142,29 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
           </Typography>
           <Box>
             <IconButton
-              onClick={() => handleMovePlayer(index, -1)}
+              onClick={() => {
+                playAudio(locationMoveSound);
+                handleMovePlayer(index, -1);
+              }}
               disabled={index === 0}
             >
               <ArrowUpward />
             </IconButton>
             <IconButton
-              onClick={() => handleMovePlayer(index, 1)}
+              onClick={() => {
+                playAudio(locationMoveSound);
+                handleMovePlayer(index, 1);
+              }}
               disabled={index === selection.length - 1}
             >
               <ArrowDownward />
             </IconButton>
-            <IconButton onClick={() => handleRemovePlayer(index)}>
+            <IconButton
+              onClick={() => {
+                playAudio(buttonClickBack);
+                handleRemovePlayer(index);
+              }}
+            >
               <Delete />
             </IconButton>
           </Box>
@@ -152,9 +174,22 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
   );
 
   return (
-    <Grid container sx={{ height: "100vh", overflow: "hidden" }}>
+    <Grid
+      container
+      sx={{
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
       {/* Player 1 Panel */}
-      <Grid item xs={3} sx={{ padding: 2, borderRight: "1px solid #ddd" }}>
+      <Grid
+        item
+        xs={3}
+        sx={{
+          padding: 2,
+          borderRight: "1px solid #ddd",
+        }}
+      >
         <Typography variant="h5" textAlign="center" gutterBottom>
           Player 1
         </Typography>
@@ -172,7 +207,13 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
       </Grid>
 
       {/* Center Panel */}
-      <Grid item xs={6} sx={{ padding: 2 }}>
+      <Grid
+        item
+        xs={6}
+        sx={{
+          padding: 2,
+        }}
+      >
         <Typography variant="h4" textAlign="center" gutterBottom>
           Choose Your Team - {currentSelection}
         </Typography>
@@ -180,7 +221,12 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
           {players.map((player) => (
             <Grid item xs={4} key={player.id}>
               <Card>
-                <CardActionArea onClick={() => handlePlayerClick(player)}>
+                <CardActionArea
+                  onClick={() => {
+                    playAudio(soldierSelectSound);
+                    handlePlayerClick(player);
+                  }}
+                >
                   <CardContent>
                     <Typography variant="h6">
                       {player.type} {player.icon}
@@ -212,7 +258,14 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
       </Grid>
 
       {/* Player 2 or CPU Panel */}
-      <Grid item xs={3} sx={{ padding: 2, borderLeft: "1px solid #ddd" }}>
+      <Grid
+        item
+        xs={3}
+        sx={{
+          padding: 2,
+          borderLeft: "1px solid #ddd",
+        }}
+      >
         <Typography variant="h5" textAlign="center" gutterBottom>
           {gameSettings.opponentType === "CPU" ? "CPU" : "Player 2"}
         </Typography>
@@ -253,9 +306,13 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
                       : "outlined"
                   }
                   color={levelColors[level]}
-                  onClick={() =>
-                    setGameSettings({ ...gameSettings, difficultyLevel: level })
-                  }
+                  onClick={() => {
+                    playAudio(buttonClickSound);
+                    setGameSettings({
+                      ...gameSettings,
+                      difficultyLevel: level,
+                    });
+                  }}
                 >
                   {level}
                 </Button>
@@ -280,6 +337,7 @@ const TeamSelection = ({ gameSettings, setGameSettings }) => {
             (gameSettings.opponentType !== "CPU" && !isPlayer2Ready)
           }
           onClick={handleStartGame}
+          onMouseEnter={() => playAudio(buttonHoverSound)}
         >
           Let's Fight!
         </Button>

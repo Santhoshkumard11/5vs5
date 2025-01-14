@@ -9,6 +9,7 @@ export const SOLDIER_TYPES = {
     img: {
       normal: "./img/assault-rifle.png",
       fire: "./img/assault-rifle-fire.png",
+      cursor: "./img/aim-1.png",
     },
   },
   SNIPER: {
@@ -21,6 +22,7 @@ export const SOLDIER_TYPES = {
     img: {
       normal: "./img/sniper.png",
       fire: "./img/sniper-fire.png",
+      cursor: "./img/aim-1.png",
     },
   },
   MEDIC: {
@@ -34,6 +36,7 @@ export const SOLDIER_TYPES = {
     img: {
       normal: "./img/medic.png",
       fire: "./img/medic-fire.png",
+      cursor: "./img/aim-1.png",
     },
   },
   MACHINE_GUN: {
@@ -46,6 +49,7 @@ export const SOLDIER_TYPES = {
     img: {
       normal: "./img/machine-gun.png",
       fire: "./img/machine-gun-fire.png",
+      cursor: "./img/aim-1.png",
     },
   },
   SHOTGUN: {
@@ -58,6 +62,7 @@ export const SOLDIER_TYPES = {
     img: {
       normal: "./img/shotgun.png",
       fire: "./img/shotgun-fire.png",
+      cursor: "./img/aim-1.png",
     },
   },
 };

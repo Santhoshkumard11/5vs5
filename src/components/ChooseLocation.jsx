@@ -9,6 +9,13 @@ import {
   IconButton,
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import { playAudio } from "../utils/gameLogic";
+import {
+  buttonClickBack,
+  buttonClickSound,
+  buttonHoverSound,
+  locationMoveSound,
+} from "../constants/game";
 
 const locations = [
   { name: "Japan", image: "img/japan.jpg" },
@@ -25,10 +32,12 @@ const ChooseLocation = ({ setGameSettings }) => {
   const [selectedLocation, setSelectedLocation] = useState(null);
 
   const handleNext = () => {
+    playAudio(locationMoveSound);
     setCurrentIndex((prevIndex) => (prevIndex + 1) % locations.length);
   };
 
   const handlePrev = () => {
+    playAudio(locationMoveSound);
     setCurrentIndex(
       (prevIndex) => (prevIndex - 1 + locations.length) % locations.length
     );
@@ -42,17 +51,20 @@ const ChooseLocation = ({ setGameSettings }) => {
     if (selectedLocation) {
       setGameSettings((prevSettings) => ({
         ...prevSettings,
-        locationImagePath: "./img/" + selectedLocation + ".jpg",
+        locationImagePath:
+          "./img/" + selectedLocation.replace(" ", "_") + ".jpg",
         locationName: selectedLocation,
       }));
 
       navigate("/team");
+      playAudio(buttonClickSound);
     } else {
       alert("Please select a location to continue.");
     }
   };
 
   const handleBackToMenu = () => {
+    playAudio(buttonClickBack);
     navigate("/");
   };
 
@@ -65,22 +77,25 @@ const ChooseLocation = ({ setGameSettings }) => {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        background: "linear-gradient(135deg, #1e88e5, #1565c0)",
-        color: "#ffffff",
+        background: "linear-gradient(135deg, #08D9D6, #FFFFFF)",
+        color: "#000000",
         padding: "20px",
       }}
     >
       {/* Back to Main Menu Button */}
       <Button
-        variant="outlined"
+        variant="contained"
         color="inherit"
         onClick={handleBackToMenu}
         sx={{
           position: "absolute",
           top: "20px",
           left: "20px",
-          border: "2px solid #ffffff",
-          color: "#ffffff",
+          border: "2px solid #FF8F00",
+          borderRadius: "10px",
+          padding: "10px 20px",
+          fontSize: "16px",
+          color: "#000000",
           textTransform: "uppercase",
           fontWeight: "bold",
         }}
@@ -120,11 +135,12 @@ const ChooseLocation = ({ setGameSettings }) => {
             position: "absolute",
             left: "-50px",
             zIndex: 10,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backgroundColor: "#26355D",
             color: "#ffffff",
             "&:hover": {
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              backgroundColor: "#EAEAEA",
             },
+            margin: "-5%",
           }}
         >
           <ArrowBackIos />
@@ -158,8 +174,8 @@ const ChooseLocation = ({ setGameSettings }) => {
             variant="h6"
             sx={{
               padding: "10px",
-              backgroundColor: "#000000a0",
-              color: "#ffffff",
+              backgroundColor: "#EAEAEA",
+              color: "#000000",
             }}
           >
             {locations[currentIndex].name}
@@ -172,11 +188,12 @@ const ChooseLocation = ({ setGameSettings }) => {
             position: "absolute",
             right: "-50px",
             zIndex: 10,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            backgroundColor: "#26355D",
             color: "#ffffff",
             "&:hover": {
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              backgroundColor: "#EAEAEA",
             },
+            margin: "-5%",
           }}
         >
           <ArrowForwardIos />
@@ -185,14 +202,21 @@ const ChooseLocation = ({ setGameSettings }) => {
 
       <Button
         variant="contained"
-        color="primary"
         onClick={handleContinue}
+        onMouseEnter={() => {
+          playAudio(buttonHoverSound);
+        }}
         sx={{
           padding: "12px 20px",
           fontSize: "18px",
-          textTransform: "uppercase",
+          marginTop: "20px",
           fontWeight: "bold",
-          borderRadius: "30px",
+          borderRadius: "10px",
+          color: "#ffffff",
+          backgroundColor: "#26355D",
+          "&:hover": {
+            backgroundColor: "#EAEAEA",
+          },
         }}
       >
         Continue

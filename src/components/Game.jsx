@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Modal, Box, Typography } from "@mui/material";
-import TeamDisplay from "./TeamDisplay";
+import { LeftTeamDisplay, RightTeamDisplay } from "./TeamDisplay";
 import AirdropModal from "./AirdropModal";
 import GameOverModal from "./GameOverModal";
 import {
@@ -11,6 +11,7 @@ import {
   getAIMove,
   getWinningPlayer,
   sendAudioTextToPythonServer,
+  playAudio,
 } from "../utils/gameLogic";
 import { calculateDamage } from "../utils/calculations";
 import "../styles/Game.css";
@@ -18,14 +19,24 @@ import { SoundManager } from "../utils/soundEffects";
 import SoundControl from "./SoundControl";
 
 import AlertComponent from "./Alerts";
-import { levelMoveTimeout } from "../constants/game";
+import {
+  buttonClickBack,
+  buttonClickSound,
+  buttonHoverSound,
+  levelMoveTimeout,
+} from "../constants/game";
 import { PlayersStats } from "./Stats";
 import RibbonDisplay from "./RibbonDisplay";
 import getCommentaryText from "../utils/bedrock";
+import SpeechRecognitionComponent from "./SpeechRecognition";
+
+import FightingGameBackground from "./GameBackground";
 
 function Game({ gameSettings, setGameSettings }) {
   const navigate = useNavigate();
   const [showQuitModal, setShowQuitModal] = useState(false);
+  const [useCustomCursor, setUseCustomCursor] = useState("default");
+
   const [gameState, setGameState] = useState({
     player1Team: [],
     player2Team: [],
@@ -57,7 +68,6 @@ function Game({ gameSettings, setGameSettings }) {
   const [showAlertChooseYourTeamPlayer, setShowAlertChooseYourTeamPlayer] =
     useState(false);
 
-  const [showAlertNoDamage, setShowAlertNoDamage] = useState(false);
   const [countdown, setCountdown] = useState(null);
   const [progress, setProgress] = useState(100);
   const moveTimeout = levelMoveTimeout[gameSettings.difficultyLevel];
@@ -171,6 +181,8 @@ function Game({ gameSettings, setGameSettings }) {
   }, [gameState.currentTurn, gameState.gameOver]);
 
   const handleSoldierSelect = (soldier) => {
+    SoundManager.playSound("UI", "select");
+    setUseCustomCursor(soldier.img.cursor);
     const currentTeam =
       gameState.currentTurn === "player1"
         ? gameState.player1Team
@@ -270,7 +282,6 @@ function Game({ gameSettings, setGameSettings }) {
         updateMetrics(attacker.owner, true); // Successful hit
       } else {
         SoundManager.playSound("UI", "hit_miss");
-        setShowAlertNoDamage(true);
         updateMetrics(attacker.owner, false); // Miss
       }
     }, 200);
@@ -381,6 +392,7 @@ function Game({ gameSettings, setGameSettings }) {
   const handleNextRound = () => {
     if (!gameState.finalWinner) {
       startNewRound();
+      playAudio(buttonClickSound);
     }
   };
 
@@ -393,17 +405,15 @@ function Game({ gameSettings, setGameSettings }) {
   };
 
   return (
-    <div
-      className="game-container"
-      style={{
-        backgroundImage: `url('${gameSettings.locationImagePath}')`,
-        backgroundSize: "cover",
-      }}
-    >
+    <div className="game-container">
       <Button
-        variant="outlined"
+        variant="contained"
         color="error"
-        onClick={() => setShowQuitModal(true)}
+        onClick={() => {
+          playAudio(buttonClickSound);
+          setShowQuitModal(true);
+        }}
+        onMouseEnter={() => playAudio(buttonHoverSound)}
         style={{
           position: "absolute",
           bottom: "10px",
@@ -424,6 +434,8 @@ function Game({ gameSettings, setGameSettings }) {
       </div>
 
       <PlayersStats gameState={gameState} />
+
+      <FightingGameBackground />
 
       {/* Game Over Modal for Each Round */}
       {gameState.gameOver && !gameState.finalWinner && (
@@ -509,7 +521,10 @@ function Game({ gameSettings, setGameSettings }) {
               }}
             >
               <Button
-                onClick={() => navigate("/")}
+                onClick={() => {
+                  playAudio(buttonClickBack);
+                  navigate("/");
+                }}
                 variant="contained"
                 color="success"
                 sx={{
@@ -538,6 +553,7 @@ function Game({ gameSettings, setGameSettings }) {
           }}
         />
       )}
+
       <div className="timer-container">
         {countdown ? (
           <Typography variant="h3" className="timer">
@@ -549,20 +565,39 @@ function Game({ gameSettings, setGameSettings }) {
           </Typography>
         )}
       </div>
-      <div className="battlefield">
-        <TeamDisplay
-          team={gameState.player1Team}
-          onSelect={handleSoldierSelect}
-          isActive={gameState.currentTurn === "player1"}
-          selectedSoldier={gameState.selectedSoldier}
-        />
-        <TeamDisplay
-          team={gameState.player2Team}
-          onSelect={handleSoldierSelect}
-          isActive={gameState.currentTurn === "player2"}
-          selectedSoldier={gameState.selectedSoldier}
-        />
-      </div>
+
+      {gameState.player1Team && gameState.player2Team && (
+        <div
+          className="battlefield"
+          style={{
+            cursor:
+              useCustomCursor !== "default"
+                ? `url(${useCustomCursor}) 10 10, auto`
+                : "default",
+          }}
+        >
+          <LeftTeamDisplay
+            team={gameState.player1Team}
+            onSelect={handleSoldierSelect}
+            isActive={gameState.currentTurn === "player1"}
+            selectedSoldier={gameState.selectedSoldier}
+            leftTeam={true}
+          />
+          {gameState.player2.name === "CPU" && (
+            <SpeechRecognitionComponent
+              handleAction={handleAction}
+              gameState={gameState}
+            />
+          )}
+          <RightTeamDisplay
+            team={gameState.player2Team}
+            onSelect={handleSoldierSelect}
+            isActive={gameState.currentTurn === "player2"}
+            selectedSoldier={gameState.selectedSoldier}
+            leftTeam={false}
+          />
+        </div>
+      )}
 
       {gameState.airdropActive && (
         <AirdropModal
@@ -613,14 +648,23 @@ function Game({ gameSettings, setGameSettings }) {
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
             <Button
-              onClick={() => navigate("/")}
+              onClick={() => {
+                playAudio(buttonClickSound);
+                navigate("/");
+              }}
               variant="contained"
               color="error"
               sx={{ mr: 2 }}
             >
               Yes
             </Button>
-            <Button onClick={() => setShowQuitModal(false)} variant="outlined">
+            <Button
+              onClick={() => {
+                playAudio(buttonClickSound);
+                setShowQuitModal(false);
+              }}
+              variant="outlined"
+            >
               No
             </Button>
           </Box>
@@ -631,13 +675,6 @@ function Game({ gameSettings, setGameSettings }) {
           message={"Please select a player from your team!"}
           severity="warning"
           onClose={() => setShowAlertChooseYourTeamPlayer(false)}
-        />
-      )}
-      {showAlertNoDamage && (
-        <AlertComponent
-          message={"No damage dealt!"}
-          severity="info"
-          onClose={() => setShowAlertNoDamage(false)}
         />
       )}
     </div>

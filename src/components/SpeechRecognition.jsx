@@ -28,13 +28,12 @@ const SpeechRecognitionComponent = ({ handleAction, gameState }) => {
         const transcriptPart = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
           console.log("Final transcript:", transcriptPart);
-          setTranscript((prev) => prev + transcriptPart);
+          setTranscript(transcriptPart);
           if (transcriptPart.length > 15 && transcriptPart.includes("attack")) {
             handleVoiceCommands(transcriptPart, handleAction, gameState);
           } else {
             console.log("Not a valid command");
           }
-          setTranscript("");
         } else {
           interimTranscript += transcriptPart;
         }
@@ -62,7 +61,11 @@ const SpeechRecognitionComponent = ({ handleAction, gameState }) => {
       setRecognition(recognitionInstance);
       recognitionInstance.start(); // Start the recognition immediately
     } else {
-      recognition.start(); // Start recognition if already initialized
+      try {
+        recognition.start(); // Start recognition if already initialized
+      } catch {
+        console.log("Can't start the recognition...");
+      }
     }
     setIsListening(true);
   };
@@ -81,20 +84,23 @@ const SpeechRecognitionComponent = ({ handleAction, gameState }) => {
   return (
     <Box
       sx={{
-        padding: 2,
+        padding: 1,
         maxWidth: 300,
-        margin: "auto",
+        maxHeight: 177,
+        marginTop: 2,
         textAlign: "center",
+        background: "rgba(255, 255, 255, 0.9)",
+        borderRadius: 4,
       }}
     >
-      <Typography variant="h5" sx={{ marginBottom: 2 }}>
+      <Typography variant="h6" sx={{ marginBottom: 1 }}>
         Voice Mode
       </Typography>
       <Stack
         direction="row"
         spacing={1}
         justifyContent="center"
-        sx={{ marginBottom: 2 }}
+        sx={{ marginBottom: 1 }}
       >
         <Button
           variant="contained"
@@ -122,7 +128,7 @@ const SpeechRecognitionComponent = ({ handleAction, gameState }) => {
         variant="outlined"
         sx={{
           padding: 1.5,
-          minHeight: 80,
+          minHeight: 60,
           backgroundColor: "#f9f9f9",
           textAlign: "left",
           maxWidth: 250,

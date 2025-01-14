@@ -104,6 +104,11 @@ export function handleVoiceCommands(transcript, handleAction, gameState) {
     (s) => s.type === attackerType.type
   );
   const target = gameState.player2Team.find((s) => s.type === targetType.type);
-  
+
   handleAction(attacker, target);
+}
+
+export function playAudio(audio) {
+  audio.currentTime = 0; // Reset sound to the start
+  audio.play();
 }

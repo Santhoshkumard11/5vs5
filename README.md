@@ -1,70 +1,41 @@
-# Getting Started with Create React App
+# Dishum Dishum
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Setup
 
-## Available Scripts
+To enable **Amazon Polly**, follow the instruction [here](https://github.com/Santhoshkumard11/aws_polly) and clone the repo.
 
-In the project directory, you can run:
+## How to Play
 
-### `npm start`
+[🎮 Play now](https://main.d2d9e9l443ymte.amplifyapp.com)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Open up the game URL (for some browsers and devices you might get a warning or error page since it's trying to autoplay audio) **ignore this**
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Click on Play Vs CPU
 
-### `npm test`
+- Choose the location you want to play and click continue
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Choose the soldiers you want in your team, you can select a max of three people
 
-### `npm run build`
+- You can reorder them or delete and add new folks
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Once done, click ready, CPU will choose three soldiers
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Once you see the opponents, select the difficulty level and click Let's fight
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- You have to kill the opponent team three times, you'll have the same team in all the three rounds
 
-### `npm run eject`
+- Click on one of your soldiers and click on the other team soldier
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Now wait for the CPU to respond
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- You'll start hearing the commentary once you start
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Click start in the voice mode dialog and say sniper attack machine gun (or any other soldier type)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- It will recognize the command and perform the action, if it's not, please be in a quite place and say it loud - 
+This is the format
+<a soldier type from your team> attack <soldier type in enemies team you want to attack>
 
-## Learn More
+Complete the game and Whoa! It's done.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Have fun!

@@ -263,7 +263,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
                 backgroundColor: "#FF2E63",
                 "&:hover": { backgroundColor: "#D92655" },
               }}
-              disabled
+              disabled={true}
             >
               Play Online
             </Button>
@@ -274,7 +274,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
                 "&:hover": { backgroundColor: "#D92655" },
               }}
               onMouseEnter={() => playAudio(buttonHoverSound)}
-              disabled
+              disabled={true}
             >
               Leaderboard (oneline)
             </Button>

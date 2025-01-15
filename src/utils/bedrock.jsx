@@ -17,7 +17,7 @@ const bedrockClient = new BedrockRuntimeClient({
 const memory = [];
 
 function updateMemory(modelResponse) {
-  memory.push({ role: "assistant", content: modelResponse });
+  memory.push({ role: "assistant", content: [{ text: modelResponse }] });
   if (memory.length > 2) {
     memory.shift(); // Remove the oldest message if memory exceeds 10 conversations (20 messages)
     memory.shift();
@@ -50,17 +50,21 @@ function formatModelResponse(modelResponse) {
 
 async function getCommentaryText(
   gameContext,
-  modelId = "anthropic.claude-3-5-sonnet-20240620-v1:0"
+  modelId = "amazon.nova-pro-v1:0"
 ) {
   let currentPrompt = preparePrompt(gameContext);
 
-  const messages = [...memory, { role: "user", content: currentPrompt }];
+  const messages = [
+    ...memory,
+    { role: "user", content: [{ text: currentPrompt }] },
+  ];
 
   // Prepare the payload for the model.
   let payload = {
-    anthropic_version: "bedrock-2023-05-31",
-    max_tokens: 1000,
     messages: messages,
+    inferenceConfig: {
+      max_new_tokens: 1000,
+    },
   };
 
   // Invoke Claude with the payload and wait for the response.
@@ -78,8 +82,8 @@ async function getCommentaryText(
   const responseBody = JSON.parse(decodedResponseBody);
 
   // Update memory with the current response
-  let assistantResponse = await responseBody.content[0].text;
-  updateMemory(assistantResponse);
+  let assistantResponse = await responseBody.output.message.content[0].text;
+  // updateMemory(assistantResponse);
 
   assistantResponse = formatModelResponse(assistantResponse);
 

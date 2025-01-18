@@ -19,16 +19,46 @@ import {
   countryList,
 } from "../constants/game";
 import { playAudio } from "../utils/gameLogic";
+import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 
 const HomePage = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false); // Modal open state
+  const [newPlayer, setNewPlayer] = useState(false); // Modal open state
   const [playerInfo, setPlayerInfo] = useState({
     name: "",
     country: "",
     gender: "",
     id: "",
   });
+
+  const client = new DynamoDBClient({
+    region: "us-east-1",
+    credentials: {
+      accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+    },
+  });
+
+  async function registerNewUser(id) {
+    const params = {
+      TableName: "players",
+      Item: {
+        id: { S: id },
+        country: { S: playerInfo.country.label },
+        Gender: { S: playerInfo.gender },
+        Name: { S: playerInfo.name },
+        timestamp: { S: new Date().toISOString() },
+      },
+    };
+
+    try {
+      const data = await client.send(new PutItemCommand(params));
+      console.log("result : " + JSON.stringify(data));
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
 
   // Check local storage on mount
   useEffect(() => {
@@ -37,6 +67,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
       setPlayerInfo(storedPlayerInfo);
     } else {
       setOpenModal(true); // Open modal if no player info is found
+      setNewPlayer(true);
     }
   }, []);
 
@@ -49,9 +80,10 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
 
   // Save player info to local storage and close modal
   const handleSavePlayerInfo = () => {
+    const newUserId = Date.now().toString();
     const newPlayerInfo = {
       ...playerInfo,
-      id: Date.now().toString(),
+      id: newUserId,
     };
     localStorage.setItem("playerInfo", JSON.stringify(newPlayerInfo));
     setOpenModal(false);
@@ -59,6 +91,7 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
       ...prevSettings,
       playerInfo: newPlayerInfo,
     }));
+    registerNewUser(newUserId);
   };
 
   const countryOptions = countryList.map((country) => ({
@@ -217,10 +250,11 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
               marginBottom: "30px",
             }}
           >
-            Welcome, {playerInfo.name} from {playerInfo.country.label}{" "}
+            Welcome{!newPlayer && " back"}, {playerInfo.name} from{" "}
+            {playerInfo.country.label}{" "}
             <img
               loading="lazy"
-              width="20"
+              width="30"
               src={playerInfo.country.flag}
               alt={playerInfo.country.label}
             />

@@ -23,7 +23,7 @@ const Help = () => {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        background: "linear-gradient(135deg, #1e88e5, #1565c0)",
+        background: "linear-gradient(135deg, #26355D, #AF47D2)",
         color: "#ffffff",
         padding: "20px",
       }}

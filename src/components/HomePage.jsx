@@ -343,6 +343,16 @@ const HomePage = ({ gameSettings, setGameSettings }) => {
               Help
             </Button>
           </Box>
+          <Typography variant="h6">With 💖 by Sandy Inspires</Typography>
+          <Typography variant="body1">
+            <a
+              href="https://www.linkedin.com/in/santhosh-kumard/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Connect on LinkedIn
+            </a>
+          </Typography>
         </Box>
       )}
     </>

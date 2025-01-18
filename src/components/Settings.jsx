@@ -23,7 +23,6 @@ import {
   VolumeDown,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import FightingGameBackground from "./GameBackground";
 
 const Settings = ({ gameSettings, setGameSettings }) => {
   const navigate = useNavigate();
@@ -35,6 +34,10 @@ const Settings = ({ gameSettings, setGameSettings }) => {
   const [gameSound, setGameSound] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [pollyCommentary, setPollyCommentary] = useState(false);
+  const [
+    showAlertNoPollyCommentaryServer,
+    setShowAlertNoPollyCommentaryServer,
+  ] = useState(false);
   const [soldierNames, setSoldierNames] = useState([
     "Assault Rifle",
     "Shotgun",
@@ -66,6 +69,27 @@ const Settings = ({ gameSettings, setGameSettings }) => {
       pollyCommentary: pollyCommentary,
     }));
     navigate("/");
+  };
+
+  const handleCloseSetPollyCommentary = () =>
+    setShowAlertNoPollyCommentaryServer(false);
+
+  const handleSetPollyCommentary = (e) => {
+    fetch("http://127.0.0.1:8000/docs", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+        setPollyCommentary(e.target.checked);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setShowAlertNoPollyCommentaryServer(true);
+      });
   };
 
   return (
@@ -282,7 +306,9 @@ const Settings = ({ gameSettings, setGameSettings }) => {
               control={
                 <Switch
                   checked={pollyCommentary}
-                  onChange={(e) => setPollyCommentary(e.target.checked)}
+                  onChange={(e) => {
+                    handleSetPollyCommentary(e);
+                  }}
                   color="primary"
                 />
               }
@@ -340,6 +366,50 @@ const Settings = ({ gameSettings, setGameSettings }) => {
           </Typography>
           <Typography variant="body1">
             Use Mouse to Click and Navigate
+          </Typography>
+        </Box>
+      </Modal>
+      <Modal
+        open={showAlertNoPollyCommentaryServer}
+        onClose={handleCloseSetPollyCommentary}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "#ffffff",
+            color: "#000000",
+            padding: "20px",
+            borderRadius: "10px",
+            width: "400px",
+            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.25)",
+            textAlign: "center",
+          }}
+        >
+          <IconButton
+            onClick={handleCloseSetPollyCommentary}
+            sx={{ position: "absolute", top: "10px", right: "10px" }}
+          >
+            <Close />
+          </IconButton>
+          <Typography variant="h5" sx={{ marginBottom: "20px" }}>
+            FastAPI server is not running!
+          </Typography>
+          <Typography variant="h6">
+            Note: Follow the instructions in{" "}
+            <a
+              href="https://github.com/Santhoshkumard11/aws_polly"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              this
+            </a>{" "}
+            repo to run the server
+          </Typography>
+          <Typography variant="body1">
+            Please start the server and try again. It should run on port 8000.
           </Typography>
         </Box>
       </Modal>

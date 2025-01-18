@@ -38,7 +38,9 @@ function preparePrompt(gameContext) {
 
 function formatModelResponse(modelResponse) {
   try {
-    modelResponse = modelResponse.replace("json```", "").replace("```", "");
+    modelResponse = modelResponse
+      .replaceAll("```json", "")
+      .replaceAll("```", "");
 
     const parsedResponse = JSON.parse(modelResponse);
     return parsedResponse;
@@ -50,7 +52,7 @@ function formatModelResponse(modelResponse) {
 
 async function getCommentaryText(
   gameContext,
-  modelId = "amazon.nova-pro-v1:0"
+  modelId = "us.amazon.nova-lite-v1:0"
 ) {
   let currentPrompt = preparePrompt(gameContext);
 

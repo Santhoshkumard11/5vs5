@@ -68,6 +68,8 @@ function Game({ gameSettings, setGameSettings }) {
   });
   const [showAlertChooseYourTeamPlayer, setShowAlertChooseYourTeamPlayer] =
     useState(false);
+  const [showAlertCommentaryProblem, setShowAlertCommentaryProblem] =
+    useState(false);
 
   const [countdown, setCountdown] = useState(null);
   const [progress, setProgress] = useState(100);
@@ -271,13 +273,21 @@ function Game({ gameSettings, setGameSettings }) {
       p2RoundWins: gameState.roundsWon.player2,
     };
 
-    const latestCommentaryText = await getCommentaryText(gameContext);
+    try {
+      const latestCommentaryText = await getCommentaryText(gameContext);
 
-    if (gameSettings.pollyCommentary) {
-      sendAudioTextToPythonServer(latestCommentaryText);
-    } else {
-      handleTextToSpeech(latestCommentaryText.male, "male");
-      handleTextToSpeech(latestCommentaryText.female, "female");
+      if (gameSettings.pollyCommentary) {
+        sendAudioTextToPythonServer(latestCommentaryText);
+      } else {
+        handleTextToSpeech(latestCommentaryText.male, "male");
+        handleTextToSpeech(latestCommentaryText.female, "female");
+      }
+    } catch (error) {
+      console.error(
+        "Error while trying to get the commentary text - ",
+        error.message
+      );
+      setShowAlertCommentaryProblem(true);
     }
   }
 
@@ -710,6 +720,13 @@ function Game({ gameSettings, setGameSettings }) {
           message={"Please select a player from your team!"}
           severity="warning"
           onClose={() => setShowAlertChooseYourTeamPlayer(false)}
+        />
+      )}
+      {showAlertCommentaryProblem && (
+        <AlertComponent
+          message={"There is a problem with commentary service - check logs!"}
+          severity="warning"
+          onClose={() => setShowAlertCommentaryProblem(false)}
         />
       )}
     </div>
